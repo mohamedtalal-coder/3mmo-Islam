@@ -122,12 +122,10 @@ export function StudentCertificatesClient({ certificates, studentName }: { certi
                   <Button
                     variant="primary"
                     className="flex-1"
-                    leftIcon={<Download size={14} />}
-                    onClick={() => handleDownloadCertificate(cert)}
-                    isLoading={isGenerating === cert.id}
-                    disabled={isGenerating !== null}
+                    leftIcon={<Eye size={14} />}
+                    onClick={() => setPreviewCert(cert)}
                   >
-                    تحميل PDF
+                    معاينة الشهادة
                   </Button>
                   <Button
                     variant="outline"
@@ -135,13 +133,6 @@ export function StudentCertificatesClient({ certificates, studentName }: { certi
                     className="px-4"
                   >
                     {copiedId === cert.id ? <Check size={14} /> : <Share2 size={14} />}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => setPreviewCert(cert)}
-                    className="px-4"
-                  >
-                    <Eye size={14} />
                   </Button>
                 </div>
               </div>
