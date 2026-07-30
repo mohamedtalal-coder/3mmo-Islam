@@ -391,18 +391,6 @@ export default function StudentCoursePlayer({
                       {studentPhone}
                     </div>
 
-                    <style jsx>{`
-                      @keyframes floatWatermark {
-                        0%   { top: 8%;  left: 5%; }
-                        15%  { top: 5%;  left: 65%; }
-                        30%  { top: 78%; left: 70%; }
-                        45%  { top: 80%; left: 5%; }
-                        55%  { top: 40%; left: 35%; }
-                        70%  { top: 8%;  left: 75%; }
-                        85%  { top: 75%; left: 10%; }
-                        100% { top: 8%;  left: 5%; }
-                      }
-                    `}</style>
                   </div>
 
                   {/* Custom Fullscreen Button */}
