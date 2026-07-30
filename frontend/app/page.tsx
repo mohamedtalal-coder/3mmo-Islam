@@ -49,6 +49,16 @@ export default async function Home() {
     console.error("Failed to load home data", error);
   }
 
+  let reviews = [];
+  try {
+    const reviewsData = await fetchServerApi("/reviews/public?limit=6");
+    if (reviewsData && reviewsData.reviews) {
+      reviews = reviewsData.reviews;
+    }
+  } catch (error) {
+    console.error("Failed to load reviews", error);
+  }
+
   return (
     <LandingClient 
       grades={grades} 
@@ -56,6 +66,7 @@ export default async function Home() {
       studentCount={studentCount} 
       courseCount={courseCount}
       user={user}
+      reviews={reviews}
     />
   );
 }

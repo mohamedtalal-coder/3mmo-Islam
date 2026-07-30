@@ -100,6 +100,7 @@ model User {
   notifications   Notification[]
   achievements    Achievement[]
   bookmarks       Bookmark[]
+  reviews         Review[]
 
   notifyCourseUpdates Boolean @default(true)
   notifyQuizReminders Boolean @default(true)
@@ -212,6 +213,7 @@ model Course {
   quizzes      Quiz[]
   certificates Certificate[]
   bookmarks    Bookmark[]
+  reviews      Review[]
 }
 
 model CourseAttachment {
@@ -466,4 +468,23 @@ model Bookmark {
   lesson  Lesson? @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
   @@unique([studentId, courseId, lessonId])
+}
+
+// ==========================================
+// REVIEWS & TESTIMONIALS
+// ==========================================
+
+model Review {
+  id         String   @id @default(uuid())
+  studentId  String
+  courseId   String
+  rating     Int      @default(5)
+  comment    String?
+  isApproved Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  student User   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  course  Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, courseId])
 }

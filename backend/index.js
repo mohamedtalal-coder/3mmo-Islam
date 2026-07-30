@@ -56,6 +56,7 @@ app.use('/api/teacher', teacherRoutes);
 app.use('/api/courses', coursesRoutes);
 app.use('/api/public', publicRoutes);
 app.use('/api/notifications', notificationsRoutes);
+app.use('/api/reviews', require('./src/features/reviews/routes'));
 
 // Health check
 app.get('/api/health', (req, res) => {

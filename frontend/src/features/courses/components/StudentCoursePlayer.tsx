@@ -3,6 +3,7 @@
 import { QuizPlayer } from "@/src/features/exams/components/QuizPlayer";
 import { LessonComments } from "./LessonComments";
 import { BookmarkButton } from "./BookmarkButton";
+import { ReviewSubmitForm } from "./ReviewSubmitForm";
 import {
   CheckCircle, Circle, PlayCircle, FileText, Award, Loader2,
   ChevronDown, ChevronUp, ArrowRight, ArrowLeft, BookOpen,
@@ -308,6 +309,13 @@ export default function StudentCoursePlayer({
               {isGeneratingCert ? <Loader2 size={18} className="animate-spin" /> : <Award size={18} />}
               {isGeneratingCert ? "جاري الإنشاء..." : "تحميل شهادة الإتمام"}
             </button>
+          </div>
+        )}
+
+        {/* Review Submission */}
+        {allLessonsAndQuizzesComplete && (
+          <div className="p-4 border-t border-surfaceBorder">
+            <ReviewSubmitForm courseId={courseId} />
           </div>
         )}
       </div>

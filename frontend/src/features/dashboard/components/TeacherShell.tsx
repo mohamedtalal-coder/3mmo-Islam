@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { LayoutDashboard, BookOpen, Users, ClipboardList, Settings, GraduationCap, Bell } from "lucide-react";
+import { LayoutDashboard, BookOpen, Users, ClipboardList, Settings, GraduationCap, Bell, Star } from "lucide-react";
 import { DashboardShell } from "./DashboardShell";
 import { fetchApi } from "@/src/lib/api";
 
@@ -11,6 +11,7 @@ const teacherLinks = [
   { label: "دوراتي", href: "/dashboard/teacher/courses", icon: BookOpen },
   { label: "الطلاب", href: "/dashboard/teacher/students", icon: Users },
   { label: "الاختبارات", href: "/dashboard/teacher/quizzes", icon: ClipboardList },
+  { label: "المراجعات", href: "/dashboard/teacher/reviews", icon: Star },
   { label: "الإشعارات", href: "/dashboard/teacher/notifications", icon: Bell },
   { label: "الإعدادات", href: "/dashboard/teacher/settings", icon: Settings },
 ];
