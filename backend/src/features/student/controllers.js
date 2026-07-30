@@ -27,6 +27,7 @@ exports.getDashboardData = async (req, res) => {
             description: true,
             price: true,
             pricingType: true,
+            estimatedDuration: true,
             deletedAt: true,
             teacher: {
               select: { fullName: true }
@@ -113,6 +114,7 @@ exports.getStudentCourses = async (req, res) => {
             description: true,
             thumbnailUrl: true,
             price: true,
+            estimatedDuration: true,
             deletedAt: true
           }
         }

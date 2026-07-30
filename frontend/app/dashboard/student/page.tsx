@@ -71,12 +71,18 @@ export default async function StudentDashboardPage() {
 
   // Stats
   const totalCourses = activeEnrollments.length;
-  const completedCourses = certifiedCourseIds.size;
+  const completedCourses = activeEnrollments.filter((e: any) => e.progressPercentage === 100 || e.status === "COMPLETED").length;
   const totalCertificates = certifiedCourseIds.size;
-  const totalLessonsCompleted = completedLessonIds.size;
-  // Estimate hours: 15min per lesson
-  const estimatedHours = Math.round((totalLessonsCompleted * 15) / 60);
+  // Calculate estimated hours based on progress and course duration
+  let totalMinutesLearned = 0;
+  activeEnrollments.forEach((e: any) => {
+    const duration = e.course?.estimatedDuration || 120; // fallback to 120 mins
+    const progress = e.progressPercentage || 0;
+    totalMinutesLearned += (duration * progress) / 100;
+  });
+  const estimatedHours = Math.round(totalMinutesLearned / 60);
 
+  const totalLessonsCompleted = completedLessonIds.size;
   // Mock weekly activity data
   const weeklyData = [
     { day: "Sat", hours: Math.min(totalLessonsCompleted > 0 ? 1.5 : 0, 3) },
@@ -89,7 +95,8 @@ export default async function StudentDashboardPage() {
   ];
 
   // Completion percentage
-  const completionPercentage = totalCourses > 0 ? Math.round((completedCourses / totalCourses) * 100) : 0;
+  const totalProgress = activeEnrollments.reduce((sum: number, e: any) => sum + (e.progressPercentage || 0), 0);
+  const completionPercentage = totalCourses > 0 ? Math.round(totalProgress / totalCourses) : 0;
 
   // Time of day greeting
   const hour = new Date().getHours();
@@ -283,9 +290,9 @@ export default async function StudentDashboardPage() {
                     </h3>
                     <div className="flex items-center gap-2 mb-1.5">
                       <div className="flex-1 h-1.5 bg-gold/10 rounded-full overflow-hidden">
-                        <div className="h-full bg-gradient-to-l from-gold to-gold-soft rounded-full" style={{ width: "0%" }} />
+                        <div className="h-full bg-gradient-to-l from-gold to-gold-soft rounded-full" style={{ width: `${enrollment.progressPercentage ?? 0}%` }} />
                       </div>
-                      <span className="text-xs font-ui text-muted font-bold">0%</span>
+                      <span className="text-xs font-ui text-muted font-bold">{Math.round(enrollment.progressPercentage ?? 0)}%</span>
                     </div>
                     {enrollment.lastViewedAt && (
                       <div className="flex items-center gap-1 text-[11px] text-muted font-ui">

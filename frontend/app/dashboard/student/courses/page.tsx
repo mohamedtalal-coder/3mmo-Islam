@@ -34,7 +34,7 @@ export default async function StudentCoursesPage() {
         enrollmentStatus === "suspended" ||
         (expiresAt ? expiresAt < now : false);
       const isCompleted =
-        certifiedCourseIds.includes(e.courseId) || enrollmentStatus === "completed";
+        e.progressPercentage === 100 || enrollmentStatus === "COMPLETED";
 
       let daysRemaining = 0;
       if (expiresAt && !isExpired) {
