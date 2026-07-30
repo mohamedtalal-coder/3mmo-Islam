@@ -67,11 +67,11 @@ const config: Config = {
       },
       keyframes: {
         watermark: {
-          '0%': { transform: 'translate(0, 0) rotate(-15deg)' },
-          '25%': { transform: 'translate(40%, 40%) rotate(-15deg)' },
-          '50%': { transform: 'translate(10%, 70%) rotate(-15deg)' },
-          '75%': { transform: 'translate(-20%, 20%) rotate(-15deg)' },
-          '100%': { transform: 'translate(0, 0) rotate(-15deg)' },
+          '0%': { top: '10%', left: '10%', transform: 'rotate(-15deg)' },
+          '25%': { top: '70%', left: '20%', transform: 'rotate(-15deg)' },
+          '50%': { top: '30%', left: '60%', transform: 'rotate(-15deg)' },
+          '75%': { top: '15%', left: '40%', transform: 'rotate(-15deg)' },
+          '100%': { top: '10%', left: '10%', transform: 'rotate(-15deg)' },
         }
       },
       animation: {
