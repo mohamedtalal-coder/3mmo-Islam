@@ -9,7 +9,7 @@ export const siteConfig = {
     name: "عمو إسلام", // Config-driven name
     subject: "اللغة العربية", // Config-driven subject
     bio: "معلم خبير بشرح مبسط ومحتوى متكامل يضمن لك التفوق في اللغة العربية بأسلوب ممتع وشيق.",
-    photoUrl: "/teacher-photo.jpg",
+    photoUrl: "/teacher-photo.jpeg",
     logoUrl: "/logo.svg",
   },
 

@@ -362,10 +362,10 @@ export function LandingClient({
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     const current = e.currentTarget.src;
-                    if (!current.includes("/teacher-illustration.png") && !current.includes("/teacher-photo.jpg")) {
+                    if (!current.includes("/teacher-illustration.png") && !current.includes("/teacher-photo.jpeg")) {
                       e.currentTarget.src = "/teacher-illustration.png";
                     } else if (current.includes("/teacher-illustration.png")) {
-                      e.currentTarget.src = "/teacher-photo.jpg";
+                      e.currentTarget.src = "/teacher-photo.jpeg";
                     }
                   }}
                 />
