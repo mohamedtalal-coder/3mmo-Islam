@@ -35,12 +35,6 @@ export function useCourseForm() {
     e.preventDefault();
     setLoading(true);
 
-    if (!thumbnail) {
-      toast.error("لازم ترفع صورة غلاف الكورس.");
-      setLoading(false);
-      return;
-    }
-
     if (!gradeId) {
       toast.error("لازم تختار المرحلة الدراسية.");
       setLoading(false);
@@ -67,7 +61,7 @@ export function useCourseForm() {
     formData.append("gradeId", gradeId);
     if (introVideoUrl) formData.append("introVideoUrl", introVideoUrl);
     if (externalLink) formData.append("externalLink", externalLink);
-    formData.append("thumbnail", thumbnail);
+    if (thumbnail) formData.append("thumbnail", thumbnail);
 
     if (attachments.length > 0) {
       attachments.forEach((file) => {

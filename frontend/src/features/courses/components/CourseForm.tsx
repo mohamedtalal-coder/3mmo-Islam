@@ -75,13 +75,12 @@ export function CourseForm({ grades = [] }: { grades?: any[] }) {
             <input
               type="file"
               accept="image/*"
-              required
               onChange={(e) => setThumbnail(e.target.files?.[0] ?? null)}
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
             />
             <div className={`w-full h-full border-2 border-dashed ${thumbnail ? 'border-gold text-accent bg-gold/5' : 'border-primary border-opacity-10 text-muted hover:border-gold/50'} rounded-lg flex flex-col items-center justify-center gap-2 transition-colors`}>
               <Upload size={24} className={thumbnail ? 'text-accent' : 'text-muted'} />
-              <span className="font-ui text-sm">{thumbnail ? thumbnail.name : "اختر صورة غلاف للكورس (إجباري)"}</span>
+              <span className="font-ui text-sm">{thumbnail ? thumbnail.name : "اختر صورة غلاف للكورس (اختياري)"}</span>
             </div>
           </div>
         </div>
