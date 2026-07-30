@@ -47,7 +47,7 @@ export function middleware(request: NextRequest) {
   // Role-based guards for teacher dashboard
   if (user && pathname.startsWith("/dashboard/teacher")) {
     const role = user.role?.toUpperCase();
-    if (role !== "TEACHER") {
+    if (role !== "TEACHER" && role !== "COURSE_ADMIN" && role !== "EXAM_ADMIN") {
       const studentUrl = request.nextUrl.clone();
       studentUrl.pathname = "/dashboard/student";
       return NextResponse.redirect(studentUrl);
