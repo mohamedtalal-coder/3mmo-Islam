@@ -1,22 +1,15 @@
-const { Pool } = require('pg');
-const { PrismaPg } = require('@prisma/adapter-pg');
 const { PrismaClient } = require('@prisma/client');
 
 require('dotenv').config();
-const connectionString = process.env.DATABASE_URL;
-function createPrismaClient() {
-  const pool = new Pool({ connectionString });
-  const adapter = new PrismaPg(pool);
-  return new PrismaClient({ adapter });
-}
 
 let prisma;
 
 if (process.env.NODE_ENV === 'production') {
-  prisma = createPrismaClient();
+  prisma = new PrismaClient();
 } else {
+  // In development, reuse the client across hot reloads
   if (!global.prisma) {
-    global.prisma = createPrismaClient();
+    global.prisma = new PrismaClient();
   }
   prisma = global.prisma;
 }

@@ -12,10 +12,25 @@ const port = process.env.PORT || 5000;
 
 // Security and utility middleware
 app.use(helmet());
+
+// CORS — allow frontend origins (local + Vercel deployed)
+const allowedOrigins = [
+  'http://localhost:3000',
+  process.env.FRONTEND_URL, // Set this in Vercel env vars
+].filter(Boolean);
+
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://cd8xxg88-3000.uks1.devtunnels.ms'], // Allow Next.js frontend and dev tunnel
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.some(allowed => origin.startsWith(allowed))) {
+      return callback(null, true);
+    }
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true // Allow cookies to be sent
 }));
+
 app.use(express.json());
 const cookieParser = require('cookie-parser');
 app.use(cookieParser());
@@ -42,7 +57,7 @@ app.use('/api/public', publicRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'Express backend is running securely' });
+  res.json({ status: 'ok', message: 'Express backend is running on Vercel' });
 });
 
 // Global Error Handler
@@ -54,14 +69,19 @@ app.use((err, req, res, next) => {
   });
 });
 
-const prisma = require('./src/db');
+// Only listen when running locally (not on Vercel)
+if (!process.env.VERCEL) {
+  const prisma = require('./src/db');
+  app.listen(port, async () => {
+    console.log(`Server is running on port ${port}`);
+    try {
+      await prisma.$connect();
+      console.log('✅ Database connected successfully');
+    } catch (error) {
+      console.error('❌ Database connection failed:', error);
+    }
+  });
+}
 
-app.listen(port, async () => {
-  console.log(`Server is running on port ${port}`);
-  try {
-    await prisma.$connect();
-    console.log('✅ Database connected successfully');
-  } catch (error) {
-    console.error('❌ Database connection failed:', error);
-  }
-});
+// Export for Vercel serverless
+module.exports = app;

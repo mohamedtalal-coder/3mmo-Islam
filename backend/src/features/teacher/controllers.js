@@ -176,8 +176,10 @@ exports.createCourse = async (req, res) => {
 
     let thumbnailUrl = null;
     if (req.files && req.files.thumbnail && req.files.thumbnail.length > 0) {
-      // Create absolute URL based on the server path
-      thumbnailUrl = `${req.protocol}://${req.get('host')}/uploads/thumbnails/${req.files.thumbnail[0].filename}`;
+      // Convert buffer to base64 data URL for serverless (no persistent disk)
+      const file = req.files.thumbnail[0];
+      const base64 = file.buffer.toString('base64');
+      thumbnailUrl = `data:${file.mimetype};base64,${base64}`;
     }
 
     const course = await prisma.course.create({
@@ -198,10 +200,11 @@ exports.createCourse = async (req, res) => {
 
     if (req.files && req.files.attachments && req.files.attachments.length > 0) {
       const attachmentRecords = req.files.attachments.map(file => {
+        const base64 = file.buffer.toString('base64');
         return {
           courseId: course.id,
           fileName: file.originalname,
-          fileUrl: `${req.protocol}://${req.get('host')}/uploads/attachments/${file.filename}`,
+          fileUrl: `data:${file.mimetype};base64,${base64}`,
           fileSize: file.size
         };
       });
@@ -239,7 +242,9 @@ exports.updateCourse = async (req, res) => {
 
     let thumbnailUrl = course.thumbnailUrl;
     if (req.files && req.files.thumbnail && req.files.thumbnail.length > 0) {
-      thumbnailUrl = `${req.protocol}://${req.get('host')}/uploads/thumbnails/${req.files.thumbnail[0].filename}`;
+      const file = req.files.thumbnail[0];
+      const base64 = file.buffer.toString('base64');
+      thumbnailUrl = `data:${file.mimetype};base64,${base64}`;
     }
 
     const updatedCourse = await prisma.course.update({
@@ -270,7 +275,7 @@ exports.updateCourse = async (req, res) => {
       const attachmentRecords = req.files.attachments.map(file => ({
         courseId: id,
         fileName: file.originalname,
-        fileUrl: `${req.protocol}://${req.get('host')}/uploads/attachments/${file.filename}`,
+        fileUrl: `data:${file.mimetype};base64,${file.buffer.toString('base64')}`,
         fileSize: file.size
       }));
 

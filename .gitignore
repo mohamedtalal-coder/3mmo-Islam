@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Next.js
+.next/
+out/
+
+# Build
+dist/
+build/
+
+# Debug
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Uploads (local dev only)
+uploads/
+
+# Prisma
+prisma/*.db
+
+# Vercel
+.vercel/
+
+# Test files
+*.test.pdf
+test.pdf
+test_raw.pdf
+
+# Build artifacts
+*.zip
+*.tsbuildinfo
