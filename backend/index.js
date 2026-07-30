@@ -45,6 +45,7 @@ const studentRoutes = require('./src/features/student/routes');
 const teacherRoutes = require('./src/features/teacher/routes');
 const coursesRoutes = require('./src/features/courses/routes');
 const publicRoutes = require('./src/features/public/routes');
+const notificationsRoutes = require('./src/features/notifications/routes');
 
 // Mount routes
 app.use('/api/auth', authRoutes);
@@ -54,6 +55,7 @@ app.use('/api/student', studentRoutes);
 app.use('/api/teacher', teacherRoutes);
 app.use('/api/courses', coursesRoutes);
 app.use('/api/public', publicRoutes);
+app.use('/api/notifications', notificationsRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

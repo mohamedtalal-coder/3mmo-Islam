@@ -4,13 +4,17 @@ const bcrypt = require('bcryptjs');
 exports.updateProfile = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { fullName, phone, currentGradeId, email, password } = req.body;
+    const { fullName, phone, currentGradeId, email, password, notifyCourseUpdates, notifyQuizReminders, notifyCertificates, notifyPayments } = req.body;
 
     const updateData = {};
     if (fullName) updateData.fullName = fullName;
     if (phone !== undefined) updateData.phone = phone;
     if (currentGradeId) updateData.currentGradeId = currentGradeId;
     if (email) updateData.email = email;
+    if (notifyCourseUpdates !== undefined) updateData.notifyCourseUpdates = notifyCourseUpdates;
+    if (notifyQuizReminders !== undefined) updateData.notifyQuizReminders = notifyQuizReminders;
+    if (notifyCertificates !== undefined) updateData.notifyCertificates = notifyCertificates;
+    if (notifyPayments !== undefined) updateData.notifyPayments = notifyPayments;
 
     if (password) {
       const salt = await bcrypt.genSalt(10);

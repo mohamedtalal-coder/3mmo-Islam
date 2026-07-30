@@ -9,11 +9,13 @@ import { useRouter, usePathname } from "next/navigation";
 export function Topbar({ 
   onOpenSidebar, 
   user,
-  breadcrumbs
+  breadcrumbs,
+  unreadCount = 0,
 }: { 
   onOpenSidebar?: () => void;
   user?: { name: string; avatar?: string; email?: string; phone?: string };
   breadcrumbs?: React.ReactNode;
+  unreadCount?: number;
 }) {
   const [showProfile, setShowProfile] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
@@ -99,7 +101,11 @@ export function Topbar({
             aria-label="الإشعارات"
           >
             <Bell size={20} />
-            <span className="notification-dot" />
+            {unreadCount > 0 && (
+              <span className="absolute top-1.5 left-1.5 min-w-[16px] h-4 px-1 bg-danger text-inverse text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-surface">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
           </Link>
           
           {/* Profile Dropdown */}

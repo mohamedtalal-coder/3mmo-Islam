@@ -2,13 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { Bell, BookOpen, FileText, Award, CreditCard, CheckCheck, Loader2 } from "lucide-react";
-import { TabBar } from "./TabBar";
-import { EmptyState } from "./EmptyState";
+import { Bell, Users, CheckCheck, Loader2 } from "lucide-react";
+import { TabBar } from "../student/TabBar";
+import { EmptyState } from "../student/EmptyState";
 import { Badge } from "@/src/shared/components/ui/Badge";
 import { fetchApi } from "@/src/lib/api";
 
-type NotificationType = "course" | "quiz" | "certificate" | "payment";
+type NotificationType = "enrollment" | "course" | "quiz" | "certificate" | "payment";
 type FilterType = "all" | NotificationType;
 
 interface Notification {
@@ -21,14 +21,12 @@ interface Notification {
   isRead: boolean;
 }
 
-const iconMap: Record<NotificationType, { icon: React.ReactNode; color: string; bg: string }> = {
-  course: { icon: <BookOpen size={18} />, color: "text-primary", bg: "bg-primary/10" },
-  quiz: { icon: <FileText size={18} />, color: "text-primary", bg: "bg-primary/10" },
-  certificate: { icon: <Award size={18} />, color: "text-accent", bg: "bg-gold/10" },
-  payment: { icon: <CreditCard size={18} />, color: "text-success", bg: "bg-success/10" },
+const iconMap: Record<string, { icon: React.ReactNode; color: string; bg: string }> = {
+  enrollment: { icon: <Users size={18} />, color: "text-primary", bg: "bg-primary/10" },
+  default: { icon: <Bell size={18} />, color: "text-accent", bg: "bg-gold/10" },
 };
 
-export function StudentNotificationsClient() {
+export function TeacherNotificationsClient() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [filter, setFilter] = useState<FilterType>("all");
   const [loading, setLoading] = useState(true);
@@ -56,10 +54,7 @@ export function StudentNotificationsClient() {
 
   const tabs = [
     { id: "all", label: "الكل", count: notifications.length },
-    { id: "course", label: "الدورات", icon: <BookOpen size={14} /> },
-    { id: "quiz", label: "الاختبارات", icon: <FileText size={14} /> },
-    { id: "certificate", label: "الشهادات", icon: <Award size={14} /> },
-    { id: "payment", label: "المدفوعات", icon: <CreditCard size={14} /> },
+    { id: "enrollment", label: "تسجيلات الطلاب", icon: <Users size={14} /> },
   ];
 
   const filtered =
@@ -152,7 +147,7 @@ export function StudentNotificationsClient() {
       {filtered.length > 0 ? (
         <div className="space-y-2 stagger-children">
           {filtered.map((notification) => {
-            const config = iconMap[notification.type] || iconMap.course;
+            const config = iconMap[notification.type] || iconMap.default;
             const content = (
               <>
                 <div
@@ -215,7 +210,7 @@ export function StudentNotificationsClient() {
         <EmptyState
           icon={<Bell size={32} />}
           title="لا توجد إشعارات"
-          description="ستظهر هنا إشعارات تحديثات الدورات والاختبارات والشهادات."
+          description="ستظهر هنا إشعارات انضمام الطلاب وغيرها."
         />
       )}
     </div>

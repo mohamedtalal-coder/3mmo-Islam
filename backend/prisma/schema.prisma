@@ -98,6 +98,11 @@ model User {
   certificates    Certificate[]
   lessonComments  LessonComment[]
   notifications   Notification[]
+
+  notifyCourseUpdates Boolean @default(true)
+  notifyQuizReminders Boolean @default(true)
+  notifyCertificates  Boolean @default(true)
+  notifyPayments      Boolean @default(true)
 }
 
 model Settings {

@@ -130,7 +130,11 @@ exports.me = async (req, res) => {
         phone: true,
         currentGradeId: true,
         accountStatus: true,
-        createdAt: true
+        createdAt: true,
+        notifyCourseUpdates: true,
+        notifyQuizReminders: true,
+        notifyCertificates: true,
+        notifyPayments: true
       }
     });
 

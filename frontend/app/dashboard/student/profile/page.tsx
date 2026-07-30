@@ -14,6 +14,12 @@ export default async function StudentProfilePage() {
       initialName={profile.fullName || ""}
       email={profile.email || ""}
       joinedAt={profile.createdAt || ""}
+      initialNotifications={{
+        courseUpdates: profile.notifyCourseUpdates ?? true,
+        quizReminders: profile.notifyQuizReminders ?? true,
+        certificates: profile.notifyCertificates ?? true,
+        payments: profile.notifyPayments ?? true,
+      }}
     />
   );
 }

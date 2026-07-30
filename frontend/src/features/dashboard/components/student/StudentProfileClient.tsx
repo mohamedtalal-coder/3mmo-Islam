@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, User, Lock, Camera, Bell, Globe, Palette, Target, LogOut, Mail, Calendar, Eye, EyeOff, Shield } from "lucide-react";
+import { Loader2, User, Lock, Camera, Bell, LogOut, Mail, Calendar, Eye, EyeOff, Shield } from "lucide-react";
 import Link from "next/link";
 import { useProfileForm } from "@/src/features/users/hooks/useProfileForm";
 import { Card } from "@/src/shared/components/ui/Card";
@@ -12,33 +12,26 @@ interface ProfileProps {
   initialName: string;
   email: string;
   joinedAt: string;
+  initialNotifications?: any;
 }
 
-export function StudentProfileClient({ initialName, email, joinedAt }: ProfileProps) {
+export function StudentProfileClient({ initialName, email, joinedAt, initialNotifications }: ProfileProps) {
   const {
     fullName,
     setFullName,
     password,
     setPassword,
     loading,
+    notifications,
+    setNotifications,
     handleSubmit,
     handleLogout,
-  } = useProfileForm(initialName);
+  } = useProfileForm(initialName, initialNotifications);
 
   const [showPassword, setShowPassword] = useState(false);
 
-  // Notification settings (UI only for now)
-  const [notifications, setNotifications] = useState({
-    courseUpdates: true,
-    quizReminders: true,
-    certificates: true,
-    payments: true,
-  });
 
-  // Preferences (UI only)
-  const [language, setLanguage] = useState("ar");
-  const [theme, setTheme] = useState("light");
-  const [weeklyGoalHours, setWeeklyGoalHours] = useState(5);
+
 
   const formatDate = (dateStr: string) => {
     if (!dateStr) return "";
@@ -50,7 +43,7 @@ export function StudentProfileClient({ initialName, email, joinedAt }: ProfilePr
   };
 
   const toggleNotification = (key: keyof typeof notifications) => {
-    setNotifications(prev => ({ ...prev, [key]: !prev[key] }));
+    setNotifications((prev: any) => ({ ...prev, [key]: !prev[key] }));
   };
 
   return (
@@ -187,83 +180,6 @@ export function StudentProfileClient({ initialName, email, joinedAt }: ProfilePr
           </div>
         </Card>
 
-        {/* Preferences */}
-        <Card className="p-6 animate-fade-in-up" style={{ animationDelay: "0.25s" }}>
-          <h2 className="font-display text-xl text-primary mb-5 flex items-center gap-2">
-            <Palette size={20} className="text-primary" />
-            التفضيلات
-          </h2>
-          
-          <div className="space-y-5">
-            {/* Language */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Globe size={16} className="text-muted" />
-                <span className="font-ui font-bold text-primary text-sm">اللغة</span>
-              </div>
-              <select
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-                className="border border-surfaceBorder rounded-lg px-3 py-2 font-ui text-sm bg-surface/50 focus:outline-none focus:border-gold/50"
-              >
-                <option value="ar">العربية</option>
-                <option value="en">English</option>
-              </select>
-            </div>
-
-            {/* Theme */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Palette size={16} className="text-muted" />
-                <span className="font-ui font-bold text-primary text-sm">المظهر</span>
-              </div>
-              <div className="flex gap-2">
-                {[
-                  { value: "light", label: "فاتح" },
-                  { value: "dark", label: "داكن" },
-                ].map((opt) => (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    onClick={() => setTheme(opt.value)}
-                    className={`px-4 py-2 rounded-lg font-ui text-sm transition-all ${
-                      theme === opt.value
-                        ? "bg-gold/10 text-accent font-bold border border-gold/20"
-                        : "bg-surface/50 text-muted border border-surfaceBorder hover:border-gold/20"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        {/* Learning Goals */}
-        <Card className="p-6 animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
-          <h2 className="font-display text-xl text-primary mb-5 flex items-center gap-2">
-            <Target size={20} className="text-primary" />
-            أهداف التعلم
-          </h2>
-          
-          <div>
-            <label className="text-sm font-ui text-muted mb-3 block">ساعات الدراسة الأسبوعية المستهدفة</label>
-            <div className="flex items-center gap-4">
-              <input
-                type="range"
-                min="1"
-                max="20"
-                value={weeklyGoalHours}
-                onChange={(e) => setWeeklyGoalHours(Number(e.target.value))}
-                className="flex-1 h-2 bg-gold/10 rounded-full appearance-none cursor-pointer accent-gold"
-              />
-              <span className="font-display text-2xl text-accent min-w-[60px] text-center">
-                {weeklyGoalHours}<span className="text-sm text-muted font-ui mr-1">ساعة</span>
-              </span>
-            </div>
-          </div>
-        </Card>
 
         {/* Save + Logout */}
         <div className="flex flex-col sm:flex-row gap-4 justify-between items-center pt-2 pb-8">

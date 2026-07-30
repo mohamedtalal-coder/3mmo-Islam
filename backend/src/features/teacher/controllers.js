@@ -1,4 +1,5 @@
 const prisma = require('../../db');
+const { notifyNewLesson } = require('../../services/notifications');
 
 
 const getMainTeacherId = async () => {
@@ -27,50 +28,162 @@ exports.getDashboardData = async (req, res) => {
       return res.status(403).json({ error: 'Access denied' });
     }
 
-    // Fetch teacher's courses
+    const courseFilter =
+      userRole === 'TEACHER' ? { teacherId: userId, deletedAt: null } : { deletedAt: null };
+
     const courses = await prisma.course.findMany({
-      where: { deletedAt: null },
+      where: courseFilter,
       orderBy: { createdAt: 'desc' },
       select: {
         id: true,
         title: true,
         thumbnailUrl: true,
-        price: true}
+        price: true,
+        pricingType: true,
+        published: true,
+        _count: { select: { enrollments: true } },
+      },
     });
 
-    const courseIds = courses.map(c => c.id);
+    const courseIds = courses.map((c) => c.id);
 
-    // Fetch enrollments for these courses
     let totalStudents = 0;
     let totalSales = 0;
-    let recentEnrollments = [];
+    let totalProfit = 0;
+    let activeSubscriptions = 0;
+    let newJoinsThisWeek = 0;
+    let salesThisMonth = 0;
+    let recentActivity = [];
 
     if (courseIds.length > 0) {
-      const enrollments = await prisma.enrollment.findMany({
-        where: { courseId: { in: courseIds } },
-        include: {
-          course: { select: { title: true, price: true } },
-          student: { select: { fullName: true } }
-        },
-        orderBy: { createdAt: 'desc' }
-      });
+      const now = new Date();
+      const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
-      const uniqueStudents = new Set(enrollments.map(e => e.studentId));
+      const [enrollments, payments, quizAttempts, certificates] = await Promise.all([
+        prisma.enrollment.findMany({
+          where: { courseId: { in: courseIds } },
+          include: {
+            course: { select: { title: true, price: true, pricingType: true } },
+            student: { select: { id: true, fullName: true } },
+          },
+          orderBy: { createdAt: 'desc' },
+        }),
+        prisma.payment.findMany({
+          where: { courseId: { in: courseIds }, status: 'PAID' },
+          include: {
+            course: { select: { title: true } },
+            student: { select: { id: true, fullName: true } },
+          },
+          orderBy: { createdAt: 'desc' },
+        }),
+        prisma.quizAttempt.findMany({
+          where: {
+            quiz: { courseId: { in: courseIds } },
+            status: { in: ['SUBMITTED', 'GRADED'] },
+          },
+          include: {
+            student: { select: { id: true, fullName: true } },
+            quiz: { select: { title: true, courseId: true, course: { select: { title: true } } } },
+          },
+          orderBy: { submittedAt: 'desc' },
+          take: 30,
+        }),
+        prisma.certificate.findMany({
+          where: { courseId: { in: courseIds } },
+          include: {
+            student: { select: { id: true, fullName: true } },
+            course: { select: { title: true } },
+          },
+          orderBy: { issuedAt: 'desc' },
+          take: 30,
+        }),
+      ]);
+
+      const uniqueStudents = new Set(enrollments.map((e) => e.studentId));
       totalStudents = uniqueStudents.size;
-      
-      totalSales = enrollments.reduce((sum, e) => {
-        return sum + (e.course?.price || 0);
-      }, 0);
 
-      // Top 5 enrollments for recent activity
-      recentEnrollments = enrollments.slice(0, 5);
+      totalSales = payments.reduce((sum, p) => sum + p.amount, 0);
+
+      const paidEnrollmentKeys = new Set(
+        payments.map((p) => `${p.studentId}-${p.courseId}`)
+      );
+      const legacySales = enrollments
+        .filter((e) => !paidEnrollmentKeys.has(`${e.studentId}-${e.courseId}`))
+        .reduce((sum, e) => sum + (e.course?.price || 0), 0);
+      totalSales += legacySales;
+      totalProfit = totalSales;
+
+      activeSubscriptions = enrollments.filter(
+        (e) =>
+          e.course?.pricingType === 'SUBSCRIPTION' &&
+          e.status === 'ACTIVE' &&
+          (!e.expiresAt || new Date(e.expiresAt) > now)
+      ).length;
+
+      newJoinsThisWeek = enrollments.filter(
+        (e) => new Date(e.createdAt) >= weekAgo
+      ).length;
+
+      salesThisMonth = payments
+        .filter((p) => new Date(p.createdAt) >= monthStart)
+        .reduce((sum, p) => sum + p.amount, 0);
+
+      const activityItems = [
+        ...enrollments.slice(0, 20).map((e) => ({
+          type: 'enrollment',
+          studentId: e.studentId,
+          studentName: e.student?.fullName || 'طالب',
+          courseId: e.courseId,
+          courseTitle: e.course?.title,
+          amount: e.course?.price || 0,
+          timestamp: e.createdAt,
+        })),
+        ...payments.slice(0, 20).map((p) => ({
+          type: 'payment',
+          studentId: p.studentId,
+          studentName: p.student?.fullName || 'طالب',
+          courseId: p.courseId,
+          courseTitle: p.course?.title,
+          amount: p.amount,
+          timestamp: p.createdAt,
+        })),
+        ...quizAttempts.map((a) => ({
+          type: 'quiz',
+          studentId: a.studentId,
+          studentName: a.student?.fullName || 'طالب',
+          courseId: a.quiz.courseId,
+          courseTitle: a.quiz.course?.title,
+          quizTitle: a.quiz.title,
+          score: a.score,
+          passed: a.passed,
+          timestamp: a.submittedAt || a.createdAt,
+        })),
+        ...certificates.map((c) => ({
+          type: 'certificate',
+          studentId: c.studentId,
+          studentName: c.student?.fullName || 'طالب',
+          courseId: c.courseId,
+          courseTitle: c.course?.title,
+          timestamp: c.issuedAt,
+        })),
+      ];
+
+      recentActivity = activityItems
+        .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+        .slice(0, 15);
     }
 
     res.status(200).json({
       courses,
       totalStudents,
       totalSales,
-      recentEnrollments
+      totalProfit,
+      activeSubscriptions,
+      newJoinsThisWeek,
+      salesThisMonth,
+      recentActivity,
+      recentEnrollments: recentActivity.filter((a) => a.type === 'enrollment'),
     });
   } catch (error) {
     console.error(error);
@@ -374,6 +487,24 @@ exports.createLesson = async (req, res) => {
         vimeoId: vimeoId || videoUrl // fallback to raw string if it's not a standard vimeo URL
       }
     });
+
+    try {
+      const enrollments = await prisma.enrollment.findMany({
+        where: { courseId: mod.courseId, status: 'ACTIVE' },
+        select: { studentId: true },
+      });
+      const studentIds = enrollments.map((e) => e.studentId);
+      if (studentIds.length > 0) {
+        await notifyNewLesson({
+          studentIds,
+          lessonTitle: title,
+          courseTitle: mod.course.title,
+          courseId: mod.courseId,
+        });
+      }
+    } catch (notifyErr) {
+      console.error('Notification error on new lesson:', notifyErr);
+    }
 
     res.status(201).json(newLesson);
   } catch (error) {

@@ -1,4 +1,10 @@
 const prisma = require('../../db');
+const {
+  notifyStudentEnrollment,
+  notifyTeacherNewEnrollment,
+  notifyCertificateEarned,
+  notifyQuizResult,
+} = require('../../services/notifications');
 
 exports.getDashboardData = async (req, res) => {
   try {
@@ -299,14 +305,14 @@ exports.submitStudentQuiz = async (req, res) => {
     const passed = score >= quiz.passingScore;
 
     let certificate = null;
+    let isNewCertificate = false;
 
     if (passed && quiz.hasCertificate) {
-      // Check if student already has a certificate for this course
       const existingCert = await prisma.certificate.findFirst({
         where: {
           studentId: userId,
-          courseId: quiz.courseId
-        }
+          courseId: quiz.courseId,
+        },
       });
 
       if (existingCert) {
@@ -318,21 +324,48 @@ exports.submitStudentQuiz = async (req, res) => {
             studentId: userId,
             courseId: quiz.courseId,
             quizId: quiz.id,
-            certificateNumber
-          }
+            certificateNumber,
+          },
         });
+        isNewCertificate = true;
       }
     }
 
-    // Save QuizAttempt
     await prisma.quizAttempt.create({
       data: {
         studentId: userId,
         quizId: quiz.id,
         score,
         passed,
-      }
+        status: 'SUBMITTED',
+        submittedAt: new Date(),
+      },
     });
+
+    const course = await prisma.course.findUnique({
+      where: { id: quiz.courseId },
+      select: { title: true },
+    });
+
+    try {
+      await notifyQuizResult({
+        studentId: userId,
+        quizTitle: quiz.title,
+        score,
+        passed,
+        courseId: quiz.courseId,
+      });
+
+      if (isNewCertificate && course) {
+        await notifyCertificateEarned({
+          studentId: userId,
+          courseTitle: course.title,
+          courseId: quiz.courseId,
+        });
+      }
+    } catch (notifyErr) {
+      console.error('Notification error on quiz submit:', notifyErr);
+    }
 
     // Recalculate average score
     const attempts = await prisma.quizAttempt.findMany({
@@ -412,28 +445,66 @@ exports.enrollCourse = async (req, res) => {
     const studentId = req.user.id;
     const { courseId } = req.body;
 
-    const course = await prisma.course.findUnique({ where: { id: courseId } });
+    const course = await prisma.course.findUnique({
+      where: { id: courseId },
+      include: { teacher: { select: { id: true, fullName: true } } },
+    });
     if (!course) return res.status(404).json({ error: 'Course not found' });
 
-    // Check if already enrolled
     const existing = await prisma.enrollment.findUnique({
       where: {
-        studentId_courseId: { studentId, courseId }
-      }
+        studentId_courseId: { studentId, courseId },
+      },
     });
 
     if (existing) {
       return res.status(200).json({ success: true, redirectUrl: `/courses/${courseId}` });
     }
 
-    // Direct enrollment for now (mock payment)
-    await prisma.enrollment.create({
-      data: {
-        studentId,
-        courseId,
-        status: 'ACTIVE'
+    const expiresAt =
+      course.pricingType === 'SUBSCRIPTION' && course.subscriptionPeriodDays
+        ? new Date(Date.now() + course.subscriptionPeriodDays * 24 * 60 * 60 * 1000)
+        : null;
+
+    const student = await prisma.user.findUnique({
+      where: { id: studentId },
+      select: { fullName: true },
+    });
+
+    await prisma.$transaction(async (tx) => {
+      await tx.enrollment.create({
+        data: {
+          studentId,
+          courseId,
+          status: 'ACTIVE',
+          expiresAt,
+        },
+      });
+
+      if (course.price > 0) {
+        await tx.payment.create({
+          data: {
+            studentId,
+            courseId,
+            amount: course.price,
+            status: 'PAID',
+            providerReference: `MOCK-${Date.now()}`,
+          },
+        });
       }
     });
+
+    try {
+      await notifyStudentEnrollment({ studentId, course });
+      await notifyTeacherNewEnrollment({
+        teacherId: course.teacherId,
+        studentName: student?.fullName || 'طالب',
+        courseTitle: course.title,
+        studentId,
+      });
+    } catch (notifyErr) {
+      console.error('Notification error on enroll:', notifyErr);
+    }
 
     res.status(200).json({ success: true, redirectUrl: `/courses/${courseId}` });
   } catch (error) {

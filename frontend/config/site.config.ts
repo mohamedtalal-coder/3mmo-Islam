@@ -41,7 +41,7 @@ export const siteConfig = {
     quizzes: true,
     certificates: true,
     community: false,
-    notifications: false,
+    notifications: true,
   },
 
   stats: {

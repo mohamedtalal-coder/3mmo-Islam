@@ -8,12 +8,14 @@ export function DashboardShell({
   children, 
   links, 
   user, 
-  breadcrumbs 
+  breadcrumbs,
+  unreadCount = 0,
 }: { 
   children: React.ReactNode; 
   links: SidebarLink[]; 
   user?: { name: string; avatar?: string; email?: string; phone?: string };
   breadcrumbs?: React.ReactNode;
+  unreadCount?: number;
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -29,7 +31,8 @@ export function DashboardShell({
         <Topbar 
           user={user} 
           breadcrumbs={breadcrumbs} 
-          onOpenSidebar={() => setIsSidebarOpen(true)} 
+          onOpenSidebar={() => setIsSidebarOpen(true)}
+          unreadCount={unreadCount}
         />
         
         <main className="flex-1 p-4 md:p-8">
