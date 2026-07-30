@@ -689,7 +689,7 @@ exports.getStudentBookmarks = async (req, res) => {
       where: { studentId },
       include: {
         course: { select: { id: true, title: true, thumbnailUrl: true } },
-        lesson: { select: { id: true, title: true, courseId: true, course: { select: { title: true } } } }
+        lesson: { select: { id: true, title: true, module: { select: { courseId: true, course: { select: { title: true } } } } } }
       },
       orderBy: { createdAt: 'desc' }
     });

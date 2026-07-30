@@ -118,11 +118,11 @@ export function StudentBookmarksClient() {
                       {b.lesson.title}
                     </h3>
                     <p className="font-body text-sm text-muted mb-6 line-clamp-1">
-                      {b.lesson.course?.title}
+                      {b.lesson.module?.course?.title}
                     </p>
                     <div className="mt-auto">
                       <Link
-                        href={`/dashboard/student/courses/${b.lesson.courseId}`}
+                        href={`/dashboard/student/courses/${b.lesson.module?.courseId}`}
                         className="block w-full text-center py-2.5 border border-primary/20 text-primary hover:bg-primary hover:border-primary hover:text-inverse rounded-xl font-ui transition-all"
                       >
                         الذهاب للدرس
