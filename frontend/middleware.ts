@@ -37,7 +37,7 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Auth required for protected routes
-  if (!user && !isPublicPath(pathname) && !pathname.startsWith("/api/dev/")) {
+  if (!user && !isPublicPath(pathname) && !pathname.startsWith("/api")) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = "/login";
     loginUrl.searchParams.set("redirectTo", pathname);
