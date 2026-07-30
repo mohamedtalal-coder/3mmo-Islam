@@ -387,6 +387,7 @@ export default function StudentCoursePlayer({
                       style={{
                         animation: 'floatWatermark 120s ease-in-out infinite',
                       }}
+                    >
                       {studentPhone || studentEmail || studentName}
                     </div>
 
