@@ -14,5 +14,8 @@ router.get('/lessons/:lessonId/video', verifyToken, studentController.getLessonV
 router.post('/progress', verifyToken, studentController.toggleLessonProgress);
 router.post('/enroll', verifyToken, studentController.enrollCourse);
 router.put('/profile', verifyToken, studentController.updateProfile);
+router.get('/achievements', verifyToken, studentController.getStudentAchievements);
+router.get('/bookmarks', verifyToken, studentController.getStudentBookmarks);
+router.post('/bookmarks/toggle', verifyToken, studentController.toggleBookmark);
 
 module.exports = router;

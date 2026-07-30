@@ -2,6 +2,7 @@
 
 import { QuizPlayer } from "@/src/features/exams/components/QuizPlayer";
 import { LessonComments } from "./LessonComments";
+import { BookmarkButton } from "./BookmarkButton";
 import {
   CheckCircle, Circle, PlayCircle, FileText, Award, Loader2,
   ChevronDown, ChevronUp, ArrowRight, ArrowLeft, BookOpen,
@@ -434,6 +435,9 @@ export default function StudentCoursePlayer({
                   <span className="hidden sm:inline">التالي</span>
                   <SkipBack size={16} />
                 </button>
+
+                {/* Bookmark */}
+                <BookmarkButton lessonId={activeLesson.id} />
 
                 {/* Mark Complete */}
                 <button

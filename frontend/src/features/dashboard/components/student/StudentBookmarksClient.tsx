@@ -1,153 +1,139 @@
 "use client";
 
-import { useState } from "react";
-import { Bookmark, BookOpen, Heart, PlayCircle, Trash2, BookmarkX } from "lucide-react";
-import { TabBar } from "./TabBar";
-import { EmptyState } from "./EmptyState";
-import { Card } from "@/src/shared/components/ui/Card";
-import { Button } from "@/src/shared/components/ui/Button";
-
-interface SavedLesson {
-  id: string;
-  title: string;
-  courseName: string;
-  moduleName: string;
-  courseId: string;
-}
-
-interface FavoriteCourse {
-  id: string;
-  title: string;
-  thumbnailUrl: string | null;
-}
-
-// Mock data
-const mockSavedLessons: SavedLesson[] = [
-  { id: "1", title: "مقدمة في المعادلات التفاضلية", courseName: "الرياضيات المتقدمة", moduleName: "الوحدة الثالثة", courseId: "abc" },
-  { id: "2", title: "التكامل بالتعويض", courseName: "الرياضيات المتقدمة", moduleName: "الوحدة الرابعة", courseId: "abc" },
-  { id: "3", title: "قوانين نيوتن", courseName: "الفيزياء الحديثة", moduleName: "الوحدة الأولى", courseId: "def" },
-];
-
-const mockFavoriteCourses: FavoriteCourse[] = [
-  { id: "1", title: "الرياضيات المتقدمة", thumbnailUrl: null },
-  { id: "2", title: "الفيزياء الحديثة", thumbnailUrl: null },
-];
-
-type TabId = "lessons" | "courses";
+import { useEffect, useState } from "react";
+import { fetchApi } from "@/src/lib/api";
+import { Bookmark, PlayCircle, BookOpen } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
 
 export function StudentBookmarksClient() {
-  const [activeTab, setActiveTab] = useState<TabId>("lessons");
-  const [savedLessons, setSavedLessons] = useState(mockSavedLessons);
-  const [favoriteCourses, setFavoriteCourses] = useState(mockFavoriteCourses);
+  const [bookmarks, setBookmarks] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const tabs = [
-    { id: "lessons", label: "الدروس المحفوظة", count: savedLessons.length, icon: <Bookmark size={14} /> },
-    { id: "courses", label: "الدورات المفضلة", count: favoriteCourses.length, icon: <Heart size={14} /> },
-  ];
+  useEffect(() => {
+    fetchBookmarks();
+  }, []);
 
-  const removeLesson = (id: string) => {
-    setSavedLessons(prev => prev.filter(l => l.id !== id));
+  const fetchBookmarks = () => {
+    fetchApi("/student/bookmarks")
+      .then((data) => setBookmarks(data.bookmarks || []))
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
   };
 
-  const removeCourse = (id: string) => {
-    setFavoriteCourses(prev => prev.filter(c => c.id !== id));
+  const removeBookmark = async (courseId?: string, lessonId?: string) => {
+    try {
+      await fetchApi("/student/bookmarks/toggle", {
+        method: "POST",
+        body: JSON.stringify({ courseId, lessonId }),
+      });
+      fetchBookmarks();
+    } catch (error) {
+      console.error(error);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64 text-primary">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
-      {/* Header */}
-      <h1 className="font-display text-3xl text-primary flex items-center gap-3">
-        <Bookmark size={28} className="text-accent" />
-        المحفوظات
-      </h1>
+    <div className="space-y-6">
+      <div className="flex items-center gap-3 mb-8">
+        <div className="p-3 bg-primary/10 text-primary rounded-xl">
+          <Bookmark size={28} />
+        </div>
+        <div>
+          <h1 className="font-display text-2xl text-primary mb-1">المحفوظات</h1>
+          <p className="font-body text-sm text-muted">
+            الكورسات والدروس التي قمت بحفظها للرجوع إليها لاحقاً
+          </p>
+        </div>
+      </div>
 
-      {/* Tabs */}
-      <TabBar
-        tabs={tabs}
-        activeTab={activeTab}
-        onTabChange={(id) => setActiveTab(id as TabId)}
-      />
-
-      {/* Content */}
-      {activeTab === "lessons" && (
-        <>
-          {savedLessons.length > 0 ? (
-            <div className="space-y-2 stagger-children">
-              {savedLessons.map((lesson) => (
-                <Card key={lesson.id} hoverable className="p-4 flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                    <PlayCircle size={18} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-ui font-bold text-primary text-sm truncate">{lesson.title}</h3>
-                    <p className="text-xs text-muted font-ui mt-0.5">
-                      {lesson.courseName} • {lesson.moduleName}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <button
-                      onClick={() => removeLesson(lesson.id)}
-                      className="p-2 rounded-lg text-muted hover:text-danger hover:bg-danger/5 transition-colors"
-                      title="إزالة"
+      {bookmarks.length === 0 ? (
+        <div className="text-center py-16 bg-surface border border-primary/5 rounded-[24px]">
+          <Bookmark size={48} className="mx-auto text-primary/20 mb-4" />
+          <h3 className="font-ui text-xl text-primary mb-2">لا توجد محفوظات</h3>
+          <p className="text-muted font-body">
+            يمكنك حفظ الكورسات والدروس المفضلة لديك للرجوع إليها بسهولة.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {bookmarks.map((b) => (
+            <div key={b.id} className="bg-surface border border-primary/5 rounded-[24px] overflow-hidden hover:shadow-soft transition-all duration-300 flex flex-col">
+              {b.course ? (
+                <>
+                  <div className="relative h-40 w-full bg-primary/5">
+                    {b.course.thumbnailUrl ? (
+                      <Image src={b.course.thumbnailUrl} alt={b.course.title} fill className="object-cover" />
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-primary/20">
+                        <BookOpen size={48} />
+                      </div>
+                    )}
+                    <button 
+                      onClick={() => removeBookmark(b.course.id, undefined)}
+                      className="absolute top-3 left-3 p-2 bg-white/90 text-primary rounded-full hover:bg-danger hover:text-white transition-colors"
+                      title="إزالة من المحفوظات"
                     >
-                      <Trash2 size={16} />
+                      <Bookmark size={18} fill="currentColor" />
                     </button>
                   </div>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <EmptyState
-              icon={<Bookmark size={32} />}
-              title="لا توجد دروس محفوظة"
-              description="احفظ الدروس المهمة أثناء مشاهدة الدورات للعودة إليها لاحقاً."
-              action={{ label: "عرض دوراتي", href: "/dashboard/student/courses" }}
-            />
-          )}
-        </>
-      )}
-
-      {activeTab === "courses" && (
-        <>
-          {favoriteCourses.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger-children">
-              {favoriteCourses.map((course) => (
-                <Card key={course.id} hoverable className="overflow-hidden group p-0">
-                  <div className="h-40 bg-surfaceHover border-b border-surfaceBorder rounded-t-[19px] flex items-center justify-center relative overflow-hidden">
-                    {course.thumbnailUrl ? (
-                      /* eslint-disable-next-line @next/next/no-img-element */
-                      <img src={course.thumbnailUrl} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    ) : (
-                      <BookOpen size={32} className="text-surfaceBorder" />
-                    )}
+                  <div className="p-5 flex-1 flex flex-col">
+                    <div className="inline-block px-2.5 py-1 bg-primary/10 text-primary text-xs font-ui rounded-full mb-3 w-fit">
+                      كورس
+                    </div>
+                    <h3 className="font-ui text-lg text-primary font-semibold mb-4 flex-1 line-clamp-2">
+                      {b.course.title}
+                    </h3>
+                    <Link
+                      href={`/dashboard/student/courses/${b.course.id}`}
+                      className="w-full text-center py-2.5 bg-primary/5 text-primary hover:bg-primary hover:text-inverse rounded-xl font-ui transition-colors"
+                    >
+                      متابعة الكورس
+                    </Link>
                   </div>
-                  <div className="p-4">
-                    <h3 className="font-ui font-bold text-primary text-sm mb-3 group-hover:text-accent transition-colors">{course.title}</h3>
-                    <div className="flex gap-2">
-                      <Button variant="primary" className="flex-1" leftIcon={<PlayCircle size={14} />}>
-                        عرض الدورة
-                      </Button>
-                      <Button
-                        variant="outline"
-                        onClick={() => removeCourse(course.id)}
-                        className="px-3"
+                </>
+              ) : b.lesson ? (
+                <>
+                  <div className="p-5 flex-1 flex flex-col relative">
+                    <button 
+                      onClick={() => removeBookmark(undefined, b.lesson.id)}
+                      className="absolute top-5 left-5 p-2 bg-primary/5 text-primary rounded-full hover:bg-danger hover:text-white transition-colors"
+                      title="إزالة من المحفوظات"
+                    >
+                      <Bookmark size={18} fill="currentColor" />
+                    </button>
+                    <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-accent/10 text-accent text-xs font-ui rounded-full mb-3 w-fit">
+                      <PlayCircle size={14} />
+                      درس
+                    </div>
+                    <h3 className="font-ui text-lg text-primary font-semibold mb-2 line-clamp-2">
+                      {b.lesson.title}
+                    </h3>
+                    <p className="font-body text-sm text-muted mb-6 line-clamp-1">
+                      {b.lesson.course?.title}
+                    </p>
+                    <div className="mt-auto">
+                      <Link
+                        href={`/dashboard/student/courses/${b.lesson.courseId}`}
+                        className="block w-full text-center py-2.5 border border-primary/20 text-primary hover:bg-primary hover:border-primary hover:text-inverse rounded-xl font-ui transition-all"
                       >
-                        <BookmarkX size={14} />
-                      </Button>
+                        الذهاب للدرس
+                      </Link>
                     </div>
                   </div>
-                </Card>
-              ))}
+                </>
+              ) : null}
             </div>
-          ) : (
-            <EmptyState
-              icon={<Heart size={32} />}
-              title="لا توجد دورات مفضلة"
-              description="أضف الدورات التي تعجبك إلى المفضلة للوصول إليها بسرعة."
-              action={{ label: "تصفح الدورات", href: "/courses" }}
-            />
-          )}
-        </>
+          ))}
+        </div>
       )}
     </div>
   );

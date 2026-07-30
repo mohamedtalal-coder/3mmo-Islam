@@ -380,6 +380,24 @@ exports.submitStudentQuiz = async (req, res) => {
       });
     }
 
+    // Achievement for perfect score
+    if (score === 100) {
+      const existingAchievement = await prisma.achievement.findFirst({
+        where: { studentId: userId, title: `علامة كاملة: ${quiz.title}` }
+      });
+      if (!existingAchievement) {
+        await prisma.achievement.create({
+          data: {
+            studentId: userId,
+            title: `علامة كاملة: ${quiz.title}`,
+            description: 'حصلت على 100% في الاختبار',
+            icon: '🌟',
+            points: 50
+          }
+        });
+      }
+    }
+
     // Recalculate course progress
     await recalculateCourseProgress(userId, quiz.courseId);
 
@@ -645,5 +663,62 @@ exports.toggleLessonProgress = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to toggle progress' });
+  }
+};
+
+exports.getStudentAchievements = async (req, res) => {
+  try {
+    const studentId = req.user.id;
+    const achievements = await prisma.achievement.findMany({
+      where: { studentId },
+      orderBy: { earnedAt: 'desc' }
+    });
+    res.status(200).json({ achievements });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch achievements' });
+  }
+};
+
+exports.getStudentBookmarks = async (req, res) => {
+  try {
+    const studentId = req.user.id;
+    const bookmarks = await prisma.bookmark.findMany({
+      where: { studentId },
+      include: {
+        course: { select: { id: true, title: true, thumbnailUrl: true } },
+        lesson: { select: { id: true, title: true, courseId: true, course: { select: { title: true } } } }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.status(200).json({ bookmarks });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch bookmarks' });
+  }
+};
+
+exports.toggleBookmark = async (req, res) => {
+  try {
+    const studentId = req.user.id;
+    const { courseId, lessonId } = req.body;
+    if (!courseId && !lessonId) return res.status(400).json({ error: 'Either courseId or lessonId is required' });
+
+    const existing = await prisma.bookmark.findFirst({
+      where: { studentId, courseId: courseId || null, lessonId: lessonId || null }
+    });
+
+    if (existing) {
+      await prisma.bookmark.delete({ where: { id: existing.id } });
+      return res.status(200).json({ bookmarked: false });
+    } else {
+      await prisma.bookmark.create({
+        data: { studentId, courseId, lessonId }
+      });
+      return res.status(200).json({ bookmarked: true });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to toggle bookmark' });
   }
 };
