@@ -165,20 +165,20 @@ export function StudentCertificatesClient({ certificates, studentName }: { certi
             onClick={() => setPreviewCert(null)}
           />
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
-            <div className="bg-surface rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden pointer-events-auto animate-scale-in">
-              {/* Preview Certificate */}
-              <div className="bg-surface p-8 text-center relative overflow-hidden border-b border-surfaceBorder">
-                <div className="absolute inset-0 opacity-5" style={{ backgroundImage: "url('/pattern.svg')" }} />
-                <div className="relative z-10">
-                  <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                    <GraduationCap size={28} className="text-primary" />
+            <div className="bg-surface rounded-2xl shadow-2xl max-w-4xl w-full overflow-hidden pointer-events-auto animate-scale-in">
+              <div className="bg-surface p-4 relative border-b border-surfaceBorder min-h-[400px] flex items-center justify-center">
+                {isGenerating === "preview" ? (
+                  <div className="flex flex-col items-center gap-4 text-primary">
+                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+                    <p className="font-ui text-sm animate-pulse">جاري إنشاء المعاينة...</p>
                   </div>
-                  <p className="text-muted text-xs font-ui font-bold tracking-widest uppercase mb-4">شهادة إتمام</p>
-                  <h3 className="font-display text-2xl text-primary mb-2">{previewCert.courseTitle}</h3>
-                  <div className="w-24 h-[2px] bg-gold/40 mx-auto my-4" />
-                  <p className="text-muted text-sm font-ui">{formatDate(previewCert.issuedAt)}</p>
-                  <p className="text-muted/60 text-xs font-mono mt-2">{previewCert.certificateNumber}</p>
-                </div>
+                ) : (
+                  <CertificateImagePreview 
+                    cert={previewCert} 
+                    studentName={studentName} 
+                    setIsGenerating={setIsGenerating} 
+                  />
+                )}
               </div>
               <div className="p-5 flex gap-3 bg-surface">
                 <Button
@@ -200,5 +200,39 @@ export function StudentCertificatesClient({ certificates, studentName }: { certi
         </>
       )}
     </div>
+  );
+}
+
+function CertificateImagePreview({ cert, studentName, setIsGenerating }: any) {
+  const [imgSrc, setImgSrc] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    const generate = async () => {
+      try {
+        setIsGenerating("preview");
+        const { generateCertificateImage } = await import("@/src/features/certificates/certificateGenerator");
+        const src = await generateCertificateImage(
+          studentName,
+          cert.courseTitle,
+          cert.issuedAt,
+          cert.certificateNumber
+        );
+        if (mounted) setImgSrc(src);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        if (mounted) setIsGenerating(null);
+      }
+    };
+    generate();
+    return () => { mounted = false; };
+  }, [cert, studentName, setIsGenerating]);
+
+  if (!imgSrc) return null;
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={imgSrc} alt="Certificate Preview" className="w-full max-h-[70vh] object-contain rounded-lg shadow-sm border border-primary/10" />
   );
 }
