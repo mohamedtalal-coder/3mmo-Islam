@@ -392,7 +392,8 @@ export default function StudentCoursePlayer({
                   {/* Anti-Piracy Watermark Overlay */}
                   <div className="absolute inset-0 z-20 pointer-events-none overflow-hidden" aria-hidden="true">
                     <div
-                      className="absolute whitespace-nowrap text-white opacity-40 font-ui text-base md:text-xl font-semibold select-none animate-watermark drop-shadow-lg"
+                      className="absolute whitespace-nowrap font-ui text-base md:text-xl font-semibold select-none animate-watermark"
+                      style={{ color: "rgba(255, 255, 255, 0.4)", textShadow: "1px 1px 3px rgba(0, 0, 0, 0.5)" }}
                     >
                       {studentPhone || studentEmail || studentName}
                     </div>
