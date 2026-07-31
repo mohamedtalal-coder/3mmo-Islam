@@ -10,10 +10,10 @@ const getMainTeacherId = async () => {
 const hasPermission = (role, resource) => {
   if (role === 'TEACHER') return true;
   if (role === 'COURSE_ADMIN') {
-    return ['DASHBOARD', 'COURSE', 'GRADE', 'SETTINGS'].includes(resource);
+    return ['DASHBOARD', 'COURSE'].includes(resource);
   }
   if (role === 'EXAM_ADMIN') {
-    return ['DASHBOARD', 'QUIZ', 'STUDENT', 'SETTINGS'].includes(resource);
+    return ['DASHBOARD', 'QUIZ'].includes(resource);
   }
   return false;
 };
@@ -1135,11 +1135,13 @@ exports.getSettings = async (req, res) => {
     const formattedSettings = {
       id: settings.id,
       teacher_name: settings.teacherName,
+      teacher_image: settings.teacherImage,
       hero_title: settings.heroTitle,
       hero_subtitle: settings.heroSubtitle,
       contact_phone: settings.contactPhone,
       facebook: settings.facebook,
-      whatsapp: settings.whatsapp};
+      whatsapp: settings.whatsapp
+    };
 
     res.status(200).json({ settings: formattedSettings });
   } catch (error) {
@@ -1152,9 +1154,16 @@ exports.createSettings = async (req, res) => {
   try {
     const { teacher_name, hero_title, hero_subtitle, contact_phone, facebook, whatsapp } = req.body;
 
+    let teacherImageUrl = null;
+    if (req.file) {
+      const base64 = req.file.buffer.toString('base64');
+      teacherImageUrl = `data:${req.file.mimetype};base64,${base64}`;
+    }
+
     const settings = await prisma.settings.create({
       data: {
         teacherName: teacher_name,
+        teacherImage: teacherImageUrl,
         heroTitle: hero_title,
         heroSubtitle: hero_subtitle,
         contactPhone: contact_phone,
@@ -1175,16 +1184,23 @@ exports.updateSettings = async (req, res) => {
     const { id } = req.params;
     const { teacher_name, hero_title, hero_subtitle, contact_phone, facebook, whatsapp } = req.body;
 
+    const updateData = {
+      teacherName: teacher_name,
+      heroTitle: hero_title,
+      heroSubtitle: hero_subtitle,
+      contactPhone: contact_phone,
+      facebook,
+      whatsapp
+    };
+
+    if (req.file) {
+      const base64 = req.file.buffer.toString('base64');
+      updateData.teacherImage = `data:${req.file.mimetype};base64,${base64}`;
+    }
+
     const settings = await prisma.settings.update({
       where: { id },
-      data: {
-        teacherName: teacher_name,
-        heroTitle: hero_title,
-        heroSubtitle: hero_subtitle,
-        contactPhone: contact_phone,
-        facebook,
-        whatsapp
-      }
+      data: updateData
     });
 
     res.status(200).json({ success: true, settings });

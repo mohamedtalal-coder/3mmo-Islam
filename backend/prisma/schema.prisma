@@ -113,6 +113,7 @@ model User {
 model Settings {
   id             String   @id @default(uuid())
   teacherName    String?
+  teacherImage   String?
   logo           String?
   primaryColor   String?
   secondaryColor String?

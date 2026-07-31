@@ -359,8 +359,8 @@ export function LandingClient({
               <div className="absolute inset-0 bg-background rounded-3xl -rotate-3 border border-primary/10 flex items-center justify-center overflow-hidden z-10 shadow-xl">
                 {/* Fallback to illustration if photoUrl is empty or placeholder */}
                 <img 
-                  src={siteConfig.teacher.photoUrl || "/teacher-illustration.png"} 
-                  alt={siteConfig.teacher.name}
+                  src={settings?.teacher_image || siteConfig.teacher.photoUrl || "/teacher-illustration.png"} 
+                  alt={settings?.teacher_name || siteConfig.teacher.name}
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     const current = e.currentTarget.src;

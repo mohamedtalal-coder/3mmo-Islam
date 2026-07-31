@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, Settings2, Globe, Type, Phone, Link as LinkIcon } from "lucide-react";
+import { Loader2, Settings2, Globe, Type, Phone, Link as LinkIcon, Image as ImageIcon } from "lucide-react";
 import { usePlatformSettingsForm, SettingsData } from "@/src/shared/hooks/usePlatformSettingsForm";
 import { Card } from "@/src/shared/components/ui/Card";
 import { Input } from "@/src/shared/components/ui/Input";
@@ -11,6 +11,7 @@ export function PlatformSettingsForm({ initialData }: { initialData: SettingsDat
     formData,
     loading,
     handleChange,
+    handleImageChange,
     handleSubmit,
   } = usePlatformSettingsForm(initialData);
 
@@ -30,15 +31,33 @@ export function PlatformSettingsForm({ initialData }: { initialData: SettingsDat
 
       <form onSubmit={handleSubmit} className="space-y-6 relative z-10 font-body">
         
-        <div className="space-y-2">
-          <Input
-            label="اسم المعلم"
-            type="text"
-            name="teacher_name"
-            value={formData.teacher_name}
-            onChange={handleChange}
-            leftIcon={<Type size={16} className="text-muted" />}
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Input
+              label="اسم المعلم"
+              type="text"
+              name="teacher_name"
+              value={formData.teacher_name}
+              onChange={handleChange}
+              leftIcon={<Type size={16} className="text-muted" />}
+            />
+          </div>
+
+          <div className="space-y-2 flex flex-col">
+            <label className="text-sm font-semibold text-primary mb-1">صورة المعلم (في الواجهة)</label>
+            <div className="relative flex items-center">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="w-full bg-background border border-surfaceBorder rounded-lg px-4 py-2.5 outline-none transition-all duration-200 focus:border-accent focus:ring-1 focus:ring-accent file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/5 file:text-primary hover:file:bg-primary/10"
+              />
+              <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                <ImageIcon size={16} className="text-muted" />
+              </div>
+            </div>
+            <p className="text-xs text-muted mt-1">اترك هذا الحقل فارغاً إذا كنت لا تود تغيير الصورة الحالية.</p>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

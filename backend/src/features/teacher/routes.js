@@ -32,8 +32,8 @@ router.patch('/students/:id', verifyToken, requirePermission('STUDENT'), teacher
 router.patch('/students/:id/enrollments/:enrollmentId', verifyToken, requirePermission('STUDENT'), teacherController.updateEnrollmentStatus);
 
 router.get('/settings', verifyToken, requirePermission('SETTINGS'), teacherController.getSettings);
-router.post('/settings', verifyToken, requirePermission('SETTINGS'), teacherController.createSettings);
-router.patch('/settings/:id', verifyToken, requirePermission('SETTINGS'), teacherController.updateSettings);
+router.post('/settings', verifyToken, requirePermission('SETTINGS'), upload.single('teacherImage'), teacherController.createSettings);
+router.patch('/settings/:id', verifyToken, requirePermission('SETTINGS'), upload.single('teacherImage'), teacherController.updateSettings);
 
 // Grades Management
 router.get('/grades', verifyToken, requirePermission('GRADE'), teacherController.getGrades);

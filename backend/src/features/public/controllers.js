@@ -81,6 +81,7 @@ exports.getHomeData = async (req, res) => {
     // Format settings to match frontend expectations
     const formattedSettings = settings ? {
       teacher_name: settings.teacherName,
+      teacher_image: settings.teacherImage,
       hero_title: settings.heroTitle,
       hero_subtitle: settings.heroSubtitle,
       contact_phone: settings.contactPhone,

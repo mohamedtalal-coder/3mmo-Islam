@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { getProfile } from "@/src/lib/session";
+import { redirect } from "next/navigation";
 import {
   BookOpen,
   Users,
@@ -93,6 +95,14 @@ function ActivityMessage({ activity }: { activity: any }) {
 }
 
 export default async function TeacherDashboard() {
+  const profile = await getProfile();
+  if (profile?.role === 'COURSE_ADMIN') {
+    redirect('/dashboard/teacher/courses');
+  }
+  if (profile?.role === 'EXAM_ADMIN') {
+    redirect('/dashboard/teacher/quizzes');
+  }
+
   let dashboardData: any = null;
 
   try {

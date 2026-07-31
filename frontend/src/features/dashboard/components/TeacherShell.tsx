@@ -40,15 +40,11 @@ export function TeacherShell({
   
   if (role === "COURSE_ADMIN") {
     filteredLinks = filteredLinks.filter(l => 
-      l.href === "/dashboard/teacher" || 
-      l.href === "/dashboard/teacher/courses" || 
-      l.href === "/dashboard/teacher/grades"
+      l.href === "/dashboard/teacher/courses"
     );
   } else if (role === "EXAM_ADMIN") {
     filteredLinks = filteredLinks.filter(l => 
-      l.href === "/dashboard/teacher" || 
-      l.href === "/dashboard/teacher/quizzes" || 
-      l.href === "/dashboard/teacher/students"
+      l.href === "/dashboard/teacher/quizzes"
     );
   }
 

@@ -28,26 +28,43 @@ export function usePlatformSettingsForm(initialData: SettingsData | null) {
     whatsapp: initialData?.whatsapp || "",
   });
 
+  const [teacherImage, setTeacherImage] = useState<File | null>(null);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setTeacherImage(e.target.files[0]);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
+    const payload = new FormData();
+    Object.entries(formData).forEach(([key, value]) => {
+      if (value !== undefined) payload.append(key, value as string);
+    });
+    
+    if (teacherImage) {
+      payload.append("teacherImage", teacherImage);
+    }
+
     try {
       if (formData.id) {
-        // Update existing settings
         await fetchApi(`/teacher/settings/${formData.id}`, {
           method: "PATCH",
-          body: JSON.stringify(formData),
+          body: payload,
+          headers: {}, // let browser set content-type with boundary
         });
       } else {
-        // Create new settings row
         await fetchApi(`/teacher/settings`, {
           method: "POST",
-          body: JSON.stringify(formData),
+          body: payload,
+          headers: {}, // let browser set content-type with boundary
         });
       }
 
@@ -65,6 +82,7 @@ export function usePlatformSettingsForm(initialData: SettingsData | null) {
     formData,
     loading,
     handleChange,
+    handleImageChange,
     handleSubmit,
   };
 }
