@@ -37,6 +37,8 @@ const config: Config = {
         
         transparent: "transparent",
         current: "currentColor",
+        white: "#ffffff",
+        black: "#000000",
       },
       extend: {
       fontFamily: {
