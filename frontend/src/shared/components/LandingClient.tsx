@@ -462,67 +462,7 @@ export function LandingClient({
         </motion.div>
       </section>
 
-      {/* Reviews Section */}
-      <section id="testimonials" className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 mb-32 pt-20 border-t border-primary/5">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-16"
-        >
-          <span className="small-label text-gold uppercase tracking-widest mb-4 block">آراء ومراجعات</span>
-          <h2 className="h2 text-primary mb-6">ماذا يقول طلابنا</h2>
-          <div className="flex justify-center mb-6">
-            <InkDivider />
-          </div>
-        </motion.div>
 
-        {reviews && reviews.length > 0 ? (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-              {reviews.map((review: any, i: number) => (
-                <motion.div
-                  key={review.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  className="bg-surface border border-primary/5 p-6 rounded-[24px] shadow-sm hover:shadow-soft transition-all duration-300"
-                >
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-12 h-12 rounded-full overflow-hidden bg-primary/5 shrink-0 relative">
-                      <Image src={review.student.avatarUrl || "/placeholder-avatar.png"} alt={review.student.fullName} fill className="object-cover" />
-                    </div>
-                    <div>
-                      <h4 className="font-ui font-bold text-primary">{review.student.fullName}</h4>
-                      <p className="text-xs text-muted font-ui">{review.course?.title}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1 mb-3 text-gold">
-                    {Array.from({ length: 5 }).map((_, idx) => (
-                      <Star key={idx} size={14} fill={idx < review.rating ? "currentColor" : "none"} />
-                    ))}
-                  </div>
-                  <p className="font-body text-sm text-secondary/90 leading-relaxed italic">
-                    "{review.comment}"
-                  </p>
-                </motion.div>
-              ))}
-            </div>
-            <div className="text-center">
-              <Link href="/reviews" className="btn btn-outline btn-lg inline-flex items-center gap-2">
-                عرض كل الآراء
-              </Link>
-            </div>
-          </>
-        ) : (
-          <div className="text-center py-12 bg-surface/50 rounded-[24px] border border-primary/5">
-            <Star size={48} className="mx-auto text-gold/30 mb-4" />
-            <p className="text-muted font-body">لا توجد مراجعات حالياً. كن أول من يضيف تقييماً!</p>
-          </div>
-        )}
-      </section>
 
       {/* NEW: Final CTA */}
       <section className="relative z-10 bg-primary dark:bg-surface-alt py-24 overflow-hidden border-y border-gold/10">
