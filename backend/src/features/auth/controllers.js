@@ -54,7 +54,7 @@ exports.register = async (req, res) => {
         governorate,
         currentGradeId,
         role: role === 'TEACHER' ? 'TEACHER' : 'STUDENT',
-        isVerified: false,
+        isVerified: true, // TEMPORARY for testing
         verificationToken,
         verificationTokenExpires
       }
@@ -67,9 +67,18 @@ exports.register = async (req, res) => {
       console.error('Failed to send verification email during registration:', err);
     }
 
+    // Set cookie immediately so they are logged in if we bypass verification
+    const token = generateToken(user);
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+
     res.status(201).json({
-      message: 'User registered successfully. Please verify your email.',
-      requireVerification: true,
+      message: 'User registered successfully.',
+      requireVerification: false, // TEMPORARY bypass
       user: {
         id: user.id,
         email: user.email,
@@ -103,9 +112,9 @@ exports.login = async (req, res) => {
     }
 
     // Check if verified
-    if (!user.isVerified) {
-      return res.status(403).json({ error: 'يرجى التحقق من بريدك الإلكتروني أولاً لتفعيل حسابك.' });
-    }
+    // if (!user.isVerified) {
+    //   return res.status(403).json({ error: 'يرجى التحقق من بريدك الإلكتروني أولاً لتفعيل حسابك.' });
+    // }
 
     // Verify password
     const isMatch = await bcrypt.compare(password, user.passwordHash);
