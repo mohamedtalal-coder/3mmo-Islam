@@ -90,6 +90,10 @@ model User {
   resetToken          String?
   resetTokenExpires   DateTime?
 
+  isVerified               Boolean   @default(false)
+  verificationToken        String?
+  verificationTokenExpires DateTime?
+
   // Relations
   currentGrade    Grade?           @relation(fields: [currentGradeId], references: [id])
   coursesTeaching Course[]         @relation("TeacherCourses")

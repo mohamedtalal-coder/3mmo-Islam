@@ -32,6 +32,8 @@ export function AuthForm({ mode }: { mode: Mode }) {
   
   const [grades, setGrades] = useState<any[]>([]);
 
+  const [verificationSent, setVerificationSent] = useState(false);
+
   useEffect(() => {
     if (mode === "register") {
       fetchApi("/public/grades/all")
@@ -55,7 +57,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
       
       setLoading(true);
       try {
-        await fetchApi("/auth/register", {
+        const response = await fetchApi("/auth/register", {
           method: "POST",
           body: JSON.stringify({ 
             email, 
@@ -68,11 +70,17 @@ export function AuthForm({ mode }: { mode: Mode }) {
             role: role.toUpperCase() 
           }),
         });
-        toast.success("تم إنشاء الحساب بنجاح!");
-        router.push(role === "teacher" ? "/dashboard/teacher" : redirectTo);
-        router.refresh();
+
+        if (response.requireVerification) {
+          setVerificationSent(true);
+        } else {
+          toast.success("تم إنشاء الحساب بنجاح!");
+          router.push(role === "teacher" ? "/dashboard/teacher" : redirectTo);
+          router.refresh();
+        }
       } catch (err: any) {
         toast.error(err.message || "حصلت مشكلة أثناء إنشاء الحساب. تأكد من البيانات وحاول تاني.");
+      } finally {
         setLoading(false);
       }
     } else {
@@ -90,6 +98,22 @@ export function AuthForm({ mode }: { mode: Mode }) {
         setLoading(false);
       }
     }
+  }
+
+  if (verificationSent) {
+    return (
+      <div className="w-full max-w-sm mx-auto text-center space-y-6 bg-surface p-8 rounded-2xl border border-primary/10 shadow-sm">
+        <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <h3 className="text-xl font-display text-primary">تم إنشاء الحساب!</h3>
+        <p className="text-muted text-sm leading-relaxed">
+          أرسلنا لك رابط التفعيل على بريدك الإلكتروني. يرجى مراجعة صندوق الوارد (أو مجلد الرسائل غير المرغوب فيها) والضغط على الرابط لتفعيل حسابك.
+        </p>
+      </div>
+    );
   }
 
   return (

@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const prisma = require('../../db');
+const { sendVerificationEmail } = require('../../services/mailer');
 
 const generateToken = (user) => {
   return jwt.sign(
@@ -28,6 +30,10 @@ exports.register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
+    // Generate Verification Token
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
     // Create user
     const user = await prisma.user.create({
       data: {
@@ -38,21 +44,23 @@ exports.register = async (req, res) => {
         parentPhone,
         governorate,
         currentGradeId,
-        role: role === 'TEACHER' ? 'TEACHER' : 'STUDENT'
+        role: role === 'TEACHER' ? 'TEACHER' : 'STUDENT',
+        isVerified: false,
+        verificationToken,
+        verificationTokenExpires
       }
     });
 
-    const token = generateToken(user);
-
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-    });
+    // Send email (don't block registration on email failure)
+    try {
+      await sendVerificationEmail(user.email, verificationToken);
+    } catch (err) {
+      console.error('Failed to send verification email during registration:', err);
+    }
 
     res.status(201).json({
-      message: 'User registered successfully',
+      message: 'User registered successfully. Please verify your email.',
+      requireVerification: true,
       user: {
         id: user.id,
         email: user.email,
@@ -83,6 +91,11 @@ exports.login = async (req, res) => {
     // Check if banned
     if (user.accountStatus === 'DISABLED') {
       return res.status(403).json({ error: 'حسابك معطل حالياً. يرجى مراجعة المعلم.' });
+    }
+
+    // Check if verified
+    if (!user.isVerified) {
+      return res.status(403).json({ error: 'يرجى التحقق من بريدك الإلكتروني أولاً لتفعيل حسابك.' });
     }
 
     // Verify password
@@ -227,5 +240,43 @@ exports.resetPassword = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to reset password.' });
+  }
+};
+
+exports.verifyEmail = async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).json({ error: 'Token is required.' });
+    }
+
+    const user = await prisma.user.findFirst({
+      where: {
+        verificationToken: token,
+        verificationTokenExpires: {
+          gt: new Date()
+        }
+      }
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: 'رابط التفعيل غير صالح أو منتهي الصلاحية.' });
+    }
+
+    // Verify user and clear token
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        isVerified: true,
+        verificationToken: null,
+        verificationTokenExpires: null
+      }
+    });
+
+    res.status(200).json({ message: 'تم تفعيل حسابك بنجاح! يمكنك الآن تسجيل الدخول.' });
+  } catch (error) {
+    console.error('Error verifying email:', error);
+    res.status(500).json({ error: 'Failed to verify email.' });
   }
 };
