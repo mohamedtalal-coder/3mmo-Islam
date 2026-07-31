@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Award, Download, Share2, Eye, ExternalLink, Copy, Check, GraduationCap, Calendar } from "lucide-react";
 import { EmptyState } from "./EmptyState";
 import { toast } from "sonner";
