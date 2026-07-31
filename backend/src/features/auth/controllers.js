@@ -131,6 +131,8 @@ exports.me = async (req, res) => {
         fullName: true,
         role: true,
         phone: true,
+        parentPhone: true,
+        governorate: true,
         currentGradeId: true,
         accountStatus: true,
         createdAt: true,
