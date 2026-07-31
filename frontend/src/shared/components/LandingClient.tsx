@@ -377,58 +377,7 @@ export function LandingClient({
         </motion.div>
       </section>
 
-      {/* NEW: Testimonials */}
-      <section id="testimonials" className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 py-16 mb-24">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
-          <h2 className="h2 text-primary mb-4">ماذا يقول طلابنا؟</h2>
-          <p className="subtitle max-w-2xl mx-auto">آراء حقيقية من طلابنا تعكس التزامنا بتقديم أفضل تجربة تعليمية.</p>
-        </motion.div>
 
-        <motion.div 
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          className="flex md:grid md:grid-cols-3 gap-8 overflow-x-auto pb-8 snap-x snap-mandatory hide-scrollbar"
-        >
-          {siteConfig.testimonials.map((t, idx) => (
-            <motion.div key={idx} variants={fadeUpVariant} className="min-w-[300px] md:min-w-0 snap-center">
-              <div className="bg-surface border border-primary/5 p-8 rounded-[24px] h-full flex flex-col relative overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                <div className="absolute top-0 right-0 w-16 h-16 bg-gold opacity-5 rounded-bl-full" />
-                <div className="absolute -top-6 -right-2 text-9xl text-gold opacity-10 font-serif leading-none select-none">"</div>
-                
-                <div className="flex items-center gap-1 mb-6 text-accent relative z-10">
-                  {[...Array(5)].map((_, i) => (
-                    <svg key={i} className={`w-5 h-5 ${i < t.rating ? 'fill-current' : 'fill-transparent stroke-current opacity-30'}`} viewBox="0 0 24 24">
-                      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                    </svg>
-                  ))}
-                </div>
-                
-                <p className="body-text text-secondary mb-8 flex-1 italic text-lg">
-                  "{t.quote}"
-                </p>
-                
-                <div className="flex items-center gap-4 pt-6 border-t border-primary/5">
-                  <div className="w-12 h-12 rounded-full bg-primary/5 text-primary flex items-center justify-center font-display font-bold text-xl shrink-0">
-                    {t.studentName.charAt(0)}
-                  </div>
-                  <div>
-                    <h4 className="font-ui font-semibold text-base text-primary">{t.studentName}</h4>
-                    {t.studentRole && <span className="caption">{t.studentRole}</span>}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </section>
 
       {/* NEW: FAQ Section */}
       <section id="faq" className="relative z-10 max-w-4xl mx-auto px-6 md:px-10 py-16 mb-24">
