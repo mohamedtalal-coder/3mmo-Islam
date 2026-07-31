@@ -12,7 +12,7 @@ const teacherLinks = [
   { label: "الطلاب", href: "/dashboard/teacher/students", icon: Users },
   { label: "الاختبارات", href: "/dashboard/teacher/quizzes", icon: ClipboardList },
   { label: "المراجعات", href: "/dashboard/teacher/reviews", icon: Star },
-  { label: "الأسئلة الشائعة", href: "/dashboard/teacher/faqs", icon: HelpCircle },
+  { label: "الأسئلة", href: "/dashboard/teacher/faqs", icon: HelpCircle },
   { label: "الإشعارات", href: "/dashboard/teacher/notifications", icon: Bell },
   { label: "الإعدادات", href: "/dashboard/teacher/settings", icon: Settings },
 ];
