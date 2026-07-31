@@ -28,14 +28,7 @@ export default async function CoursesCatalogPage({
     courses = courses.filter((c: any) => c.gradeId === profile.currentGradeId);
   }
 
-  // Fallback dummy courses to match design if db is empty and no search was performed
-  if ((!courses || courses.length === 0) && !searchParams.q) {
-    courses = [
-      { id: '1', title: "علم النفس التربوي المتقدم", description: "كورس متقدم في علم النفس التربوي يستهدف المعلمين لتطوير مهاراتهم في فهم نفسية الطلاب وتوجيه سلوكهم بشكل إيجابي.", price: 400, pricingType: "one_time", thumbnailUrl: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b" },
-      { id: '2', title: "تطبيقات الذكاء الاصطناعي في التعليم", description: "تعرف على أحدث أدوات الذكاء الاصطناعي التي ستوفر وقتك وجهدك في تحضير الدروس وتقييم الطلاب بفعالية.", price: 650, pricingType: "one_time", thumbnailUrl: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3" },
-      { id: '3', title: "إدارة الفصول الدراسية", description: "استراتيجيات عملية ومجربة لإدارة السلوك داخل الفصل الدراسي وبناء بيئة تعليمية إيجابية وتفاعلية.", price: 350, pricingType: "one_time", thumbnailUrl: "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45" }
-    ];
-  }
+  // Fallback removed to show empty state when there are no courses
 
   return (
     <main className="min-h-screen bg-background text-primary p-4 md:p-8 relative overflow-hidden font-ui">
