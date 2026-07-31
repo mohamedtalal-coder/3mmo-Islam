@@ -1,21 +1,35 @@
 "use client";
 
-import { useState } from "react";
-import { Loader2, User, Lock, Camera, Bell, LogOut, Mail, Calendar, Eye, EyeOff, Shield } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Loader2, User, Lock, Camera, Bell, LogOut, Mail, Calendar, Eye, EyeOff, Shield, Phone, MapPin, GraduationCap } from "lucide-react";
 import Link from "next/link";
 import { useProfileForm } from "@/src/features/users/hooks/useProfileForm";
 import { Card } from "@/src/shared/components/ui/Card";
 import { Button } from "@/src/shared/components/ui/Button";
 import { Input } from "@/src/shared/components/ui/Input";
+import { fetchApi } from "@/src/lib/api";
 
 interface ProfileProps {
   initialName: string;
   email: string;
   joinedAt: string;
+  initialPhone?: string;
+  initialParentPhone?: string;
+  initialGovernorate?: string;
+  initialCurrentGradeId?: string;
   initialNotifications?: any;
 }
 
-export function StudentProfileClient({ initialName, email, joinedAt, initialNotifications }: ProfileProps) {
+export function StudentProfileClient({ 
+  initialName, 
+  email, 
+  joinedAt, 
+  initialPhone = "", 
+  initialParentPhone = "", 
+  initialGovernorate = "", 
+  initialCurrentGradeId = "", 
+  initialNotifications 
+}: ProfileProps) {
   const {
     fullName,
     setFullName,
@@ -28,10 +42,23 @@ export function StudentProfileClient({ initialName, email, joinedAt, initialNoti
     handleLogout,
   } = useProfileForm(initialName, initialNotifications);
 
+  const [phone, setPhone] = useState(initialPhone);
+  const [parentPhone, setParentPhone] = useState(initialParentPhone);
+  const [governorate, setGovernorate] = useState(initialGovernorate);
+  const [currentGradeId, setCurrentGradeId] = useState(initialCurrentGradeId);
+  const [grades, setGrades] = useState<any[]>([]);
+
   const [showPassword, setShowPassword] = useState(false);
 
-
-
+  useEffect(() => {
+    fetchApi("/public/grades/all")
+      .then((data) => {
+        if (data.grades) {
+          setGrades(data.grades);
+        }
+      })
+      .catch((err) => console.error("Failed to fetch grades:", err));
+  }, []);
 
   const formatDate = (dateStr: string) => {
     if (!dateStr) return "";
@@ -44,6 +71,15 @@ export function StudentProfileClient({ initialName, email, joinedAt, initialNoti
 
   const toggleNotification = (key: keyof typeof notifications) => {
     setNotifications((prev: any) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const onSubmit = (e: React.FormEvent) => {
+    handleSubmit(e, {
+      phone: phone !== initialPhone ? phone : undefined,
+      parentPhone: parentPhone !== initialParentPhone ? parentPhone : undefined,
+      governorate: governorate !== initialGovernorate ? governorate : undefined,
+      currentGradeId: currentGradeId !== initialCurrentGradeId ? currentGradeId : undefined,
+    });
   };
 
   return (
@@ -75,7 +111,7 @@ export function StudentProfileClient({ initialName, email, joinedAt, initialNoti
         </div>
       </Card>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={onSubmit} className="space-y-6">
         {/* Edit Profile */}
         <Card className="p-6 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
           <h2 className="font-display text-xl text-primary mb-5 flex items-center gap-2">
@@ -84,22 +120,71 @@ export function StudentProfileClient({ initialName, email, joinedAt, initialNoti
           </h2>
           
           <div className="space-y-4">
-            <Input
-              label="الاسم الكامل"
-              leftIcon={<User size={14} />}
-              required
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                label="الاسم الكامل"
+                leftIcon={<User size={14} />}
+                required
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+              />
 
-            <Input
-              label="البريد الإلكتروني"
-              leftIcon={<Mail size={14} />}
-              type="email"
-              value={email}
-              disabled
-              className="bg-background/50 text-muted cursor-not-allowed"
-            />
+              <Input
+                label="البريد الإلكتروني"
+                leftIcon={<Mail size={14} />}
+                type="email"
+                value={email}
+                disabled
+                className="bg-background/50 text-muted cursor-not-allowed"
+              />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                label="رقم الطالب"
+                leftIcon={<Phone size={14} />}
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+
+              <Input
+                label="رقم ولي الأمر"
+                leftIcon={<Phone size={14} />}
+                type="tel"
+                value={parentPhone}
+                onChange={(e) => setParentPhone(e.target.value)}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                label="المحافظة"
+                leftIcon={<MapPin size={14} />}
+                type="text"
+                value={governorate}
+                onChange={(e) => setGovernorate(e.target.value)}
+              />
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-bold text-primary mr-1">الصف</label>
+                <div className="relative">
+                  <select
+                    className="w-full appearance-none rounded-xl border border-surfaceBorder bg-surface px-4 py-3 pl-10 text-sm text-primary transition-colors focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
+                    value={currentGradeId}
+                    onChange={(e) => setCurrentGradeId(e.target.value)}
+                  >
+                    <option value="" disabled>اختر الصف الخاص بك</option>
+                    {grades.map(grade => (
+                      <option key={grade.id} value={grade.id}>{grade.name}</option>
+                    ))}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center px-4 text-muted">
+                    <GraduationCap size={16} className="text-muted" />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </Card>
 

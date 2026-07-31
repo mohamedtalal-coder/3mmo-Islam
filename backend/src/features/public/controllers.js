@@ -159,3 +159,21 @@ exports.verifyCertificate = async (req, res) => {
     res.status(500).json({ error: 'Failed to verify certificate' });
   }
 };
+
+exports.getAllGrades = async (req, res) => {
+  try {
+    const grades = await prisma.grade.findMany({
+      where: { isActive: true },
+      orderBy: { order: 'asc' },
+      select: {
+        id: true,
+        name: true,
+        slug: true
+      }
+    });
+    res.status(200).json({ grades });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch grades' });
+  }
+};

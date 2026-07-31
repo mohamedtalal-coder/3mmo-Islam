@@ -82,6 +82,8 @@ model User {
   totalStudyTimeSeconds Int           @default(0)
   averageScore          Float         @default(0)
   currentGradeId        String?
+  parentPhone           String?
+  governorate           String?
   createdAt             DateTime      @default(now())
   updatedAt             DateTime      @updatedAt
 

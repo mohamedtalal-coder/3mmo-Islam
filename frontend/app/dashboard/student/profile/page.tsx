@@ -14,6 +14,10 @@ export default async function StudentProfilePage() {
       initialName={profile.fullName || ""}
       email={profile.email || ""}
       joinedAt={profile.createdAt || ""}
+      initialPhone={profile.phone || ""}
+      initialParentPhone={profile.parentPhone || ""}
+      initialGovernorate={profile.governorate || ""}
+      initialCurrentGradeId={profile.currentGradeId || ""}
       initialNotifications={{
         courseUpdates: profile.notifyCourseUpdates ?? true,
         quizReminders: profile.notifyQuizReminders ?? true,

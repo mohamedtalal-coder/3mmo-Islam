@@ -12,7 +12,7 @@ const generateToken = (user) => {
 
 exports.register = async (req, res) => {
   try {
-    const { email, password, fullName, phone, role } = req.body;
+    const { email, password, fullName, phone, parentPhone, governorate, currentGradeId, role } = req.body;
 
     if (!email || !password || !fullName) {
       return res.status(400).json({ error: 'Email, password, and full name are required.' });
@@ -35,6 +35,9 @@ exports.register = async (req, res) => {
         passwordHash,
         fullName,
         phone,
+        parentPhone,
+        governorate,
+        currentGradeId,
         role: role === 'TEACHER' ? 'TEACHER' : 'STUDENT'
       }
     });

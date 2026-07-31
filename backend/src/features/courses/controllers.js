@@ -25,7 +25,8 @@ exports.getAllCourses = async (req, res) => {
         description: true,
         price: true,
         pricingType: true,
-        thumbnailUrl: true
+        thumbnailUrl: true,
+        gradeId: true
       },
       orderBy: { createdAt: 'desc' }
     });

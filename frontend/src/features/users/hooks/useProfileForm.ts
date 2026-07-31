@@ -16,7 +16,7 @@ export function useProfileForm(initialName: string, initialNotifications?: any) 
     payments: true,
   });
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent, extraData?: any) {
     e.preventDefault();
     setLoading(true);
 
@@ -25,7 +25,7 @@ export function useProfileForm(initialName: string, initialNotifications?: any) 
         throw new Error("كلمة المرور يجب أن تكون 6 أحرف على الأقل");
       }
 
-      const body: any = {};
+      const body: any = extraData ? { ...extraData } : {};
       if (fullName !== initialName) body.fullName = fullName;
       if (password) body.password = password;
 

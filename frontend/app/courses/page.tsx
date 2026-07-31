@@ -4,6 +4,7 @@ import { TiltCard } from "@/src/shared/components/TiltCard";
 import { ArrowLeft, BookOpen, Clock, SearchX } from "lucide-react";
 import { CoursesSearch } from "@/src/features/courses/components/CoursesSearch";
 import { fetchServerApi } from "@/src/lib/serverApi";
+import { getProfile } from "@/src/lib/session";
 
 export const revalidate = 0;
 
@@ -20,6 +21,11 @@ export default async function CoursesCatalogPage({
     courses = await fetchServerApi(`/courses${queryStr}`);
   } catch (err) {
     error = err;
+  }
+
+  const profile = await getProfile();
+  if (profile && profile.role === 'STUDENT' && profile.currentGradeId) {
+    courses = courses.filter((c: any) => c.gradeId === profile.currentGradeId);
   }
 
   // Fallback dummy courses to match design if db is empty and no search was performed
