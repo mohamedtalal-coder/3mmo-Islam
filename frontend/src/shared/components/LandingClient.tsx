@@ -408,8 +408,8 @@ export function LandingClient({
                   className="bg-surface border border-primary/5 p-6 rounded-[24px] shadow-sm hover:shadow-soft transition-all duration-300"
                 >
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="w-12 h-12 rounded-full overflow-hidden bg-primary/5 shrink-0 relative">
-                      <Image src={review.student.avatarUrl || "/placeholder-avatar.png"} alt={review.student.fullName} fill className="object-cover" />
+                    <div className="w-12 h-12 rounded-full bg-gold/10 text-gold flex items-center justify-center shrink-0 font-ui font-bold text-xl">
+                      {review.student.fullName ? review.student.fullName.charAt(0) : "T"}
                     </div>
                     <div>
                       <h4 className="font-ui font-bold text-primary">{review.student.fullName}</h4>

@@ -82,8 +82,8 @@ export function TeacherReviewsClient() {
           reviews.map(review => (
             <div key={review.id} className="bg-surface border border-primary/5 p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="flex items-start gap-4">
-                <div className="relative w-12 h-12 rounded-full overflow-hidden bg-primary/5 shrink-0">
-                  <Image src={review.student.avatarUrl || "/placeholder-avatar.png"} alt={review.student.fullName} fill className="object-cover" />
+                <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 font-ui font-bold text-xl">
+                  {review.student.fullName ? review.student.fullName.charAt(0) : "T"}
                 </div>
                 <div>
                   <h3 className="font-ui font-semibold text-primary">{review.student.fullName}</h3>
