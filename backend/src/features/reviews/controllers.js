@@ -7,7 +7,7 @@ exports.getPublicReviews = async (req, res) => {
     const reviews = await prisma.review.findMany({
       where: { isApproved: true },
       include: {
-        student: { select: { id: true, fullName: true, avatarUrl: true } },
+        student: { select: { id: true, fullName: true } },
         course: { select: { id: true, title: true } }
       },
       orderBy: { createdAt: 'desc' },
@@ -63,7 +63,7 @@ exports.getTeacherReviews = async (req, res) => {
   try {
     const reviews = await prisma.review.findMany({
       include: {
-        student: { select: { id: true, fullName: true, avatarUrl: true, email: true } },
+        student: { select: { id: true, fullName: true, email: true } },
         course: { select: { id: true, title: true } }
       },
       orderBy: { createdAt: 'desc' }
