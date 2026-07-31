@@ -31,17 +31,18 @@ exports.submitReview = async (req, res) => {
       return res.status(400).json({ error: 'Valid rating (1-5) is required' });
     }
 
-    // Upsert so they can update their existing review
-    const review = await prisma.review.upsert({
+    const existingReview = await prisma.review.findUnique({
       where: {
         studentId_courseId: { studentId, courseId }
-      },
-      update: {
-        rating,
-        comment,
-        isApproved: false // Require re-approval on edit
-      },
-      create: {
+      }
+    });
+
+    if (existingReview) {
+      return res.status(400).json({ error: 'لقد قمت بإضافة تقييم لهذه الدورة مسبقاً' });
+    }
+
+    const review = await prisma.review.create({
+      data: {
         studentId,
         courseId,
         rating,

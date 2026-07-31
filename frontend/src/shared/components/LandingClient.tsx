@@ -110,14 +110,14 @@ export function LandingClient({
   studentCount = 0, 
   courseCount = 0,
   user,
-  reviews = []
+  reviews = [], faqs = []
 }: { 
   grades: any[], 
   settings: any,
   studentCount?: number,
   courseCount?: number,
   user?: any,
-  reviews?: any[]
+  reviews?: any[], faqs?: any[]
 }) {
   const { scrollYProgress } = useScroll();
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
@@ -379,38 +379,6 @@ export function LandingClient({
 
 
 
-      {/* NEW: FAQ Section */}
-      <section id="faq" className="relative z-10 max-w-4xl mx-auto px-6 md:px-10 py-16 mb-24">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
-          <h2 className="h2 text-primary mb-4">الأسئلة الشائعة</h2>
-          <p className="subtitle">كل ما تحتاج لمعرفته عن المنصة والاشتراكات.</p>
-        </motion.div>
-
-        <motion.div 
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-        >
-          {siteConfig.faq.map((faq, idx) => (
-            <motion.div key={idx} variants={fadeUpVariant}>
-              <FAQItem 
-                question={faq.question} 
-                answer={faq.answer} 
-                isOpen={openFaqIndex === idx}
-                onClick={() => setOpenFaqIndex(openFaqIndex === idx ? null : idx)}
-              />
-            </motion.div>
-          ))}
-        </motion.div>
-      </section>
-
       {/* Reviews Section */}
       <section id="testimonials" className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 mb-32 pt-20 border-t border-primary/5">
         <motion.div
@@ -471,6 +439,38 @@ export function LandingClient({
             <p className="text-muted font-body">لا توجد مراجعات حالياً. كن أول من يضيف تقييماً!</p>
           </div>
         )}
+      </section>
+
+      {/* NEW: FAQ Section */}
+      <section id="faq" className="relative z-10 max-w-4xl mx-auto px-6 md:px-10 py-16 mb-24">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
+          <h2 className="h2 text-primary mb-4">الأسئلة الشائعة</h2>
+          <p className="subtitle">كل ما تحتاج لمعرفته عن المنصة والاشتراكات.</p>
+        </motion.div>
+
+        <motion.div 
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+        >
+          {(faqs && faqs.length > 0 ? faqs : siteConfig.faq).map((faq, idx) => (
+            <motion.div key={idx} variants={fadeUpVariant}>
+              <FAQItem 
+                question={faq.question} 
+                answer={faq.answer} 
+                isOpen={openFaqIndex === idx}
+                onClick={() => setOpenFaqIndex(openFaqIndex === idx ? null : idx)}
+              />
+            </motion.div>
+          ))}
+        </motion.div>
       </section>
 
       {/* NEW: Final CTA */}

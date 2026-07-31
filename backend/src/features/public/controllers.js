@@ -54,7 +54,7 @@ exports.getPublicCourseDetails = async (req, res) => {
 
 exports.getHomeData = async (req, res) => {
   try {
-    const [courses, grades, settings, courseCount, studentCount] = await Promise.all([
+    const [courses, grades, settings, courseCount, studentCount, faqs] = await Promise.all([
       prisma.course.findMany({
         where: { deletedAt: null, published: true },
         include: {
@@ -75,7 +75,11 @@ exports.getHomeData = async (req, res) => {
         orderBy: { createdAt: 'desc' }
       }),
       prisma.course.count({ where: { deletedAt: null, published: true } }),
-      prisma.user.count({ where: { role: 'STUDENT' } })
+      prisma.user.count({ where: { role: 'STUDENT' } }),
+      prisma.faq.findMany({
+        where: { isActive: true },
+        orderBy: { position: 'asc' }
+      })
     ]);
 
     // Format settings to match frontend expectations
@@ -96,7 +100,8 @@ exports.getHomeData = async (req, res) => {
       stats: {
         courseCount,
         studentCount
-      }
+      },
+      faqs
     });
   } catch (error) {
     console.error(error);

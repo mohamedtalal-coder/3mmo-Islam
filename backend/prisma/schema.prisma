@@ -495,3 +495,17 @@ model Review {
 
   @@unique([studentId, courseId])
 }
+
+// ==========================================
+// FAQS
+// ==========================================
+
+model Faq {
+  id        String   @id @default(uuid())
+  question  String
+  answer    String
+  isActive  Boolean  @default(true)
+  position  Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
