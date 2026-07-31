@@ -391,7 +391,7 @@ export default function StudentCoursePlayer({
                       className="absolute whitespace-nowrap font-ui text-sm md:text-base font-semibold select-none animate-watermark"
                       style={{ color: "rgba(255, 255, 255, 0.4)", textShadow: "1px 1px 3px rgba(0, 0, 0, 0.5)" }}
                     >
-                      {studentName} - {studentPhone}
+                      {studentName} {studentPhone ? `- ${studentPhone}` : ''}
                     </div>
 
                   </div>
