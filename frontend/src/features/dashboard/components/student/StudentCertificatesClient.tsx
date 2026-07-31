@@ -158,18 +158,10 @@ export function StudentCertificatesClient({ certificates, studentName }: { certi
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
             <div className="bg-surface rounded-2xl shadow-2xl max-w-4xl w-full overflow-hidden pointer-events-auto animate-scale-in">
               <div className="bg-surface p-4 relative border-b border-surfaceBorder min-h-[400px] flex items-center justify-center">
-                {isGenerating === "preview" ? (
-                  <div className="flex flex-col items-center gap-4 text-primary">
-                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
-                    <p className="font-ui text-sm animate-pulse">جاري إنشاء المعاينة...</p>
-                  </div>
-                ) : (
-                  <CertificateImagePreview 
-                    cert={previewCert} 
-                    studentName={studentName} 
-                    setIsGenerating={setIsGenerating} 
-                  />
-                )}
+                <CertificateImagePreview 
+                  cert={previewCert} 
+                  studentName={studentName} 
+                />
               </div>
               <div className="p-5 flex gap-3 bg-surface">
                 <Button
@@ -194,14 +186,13 @@ export function StudentCertificatesClient({ certificates, studentName }: { certi
   );
 }
 
-function CertificateImagePreview({ cert, studentName, setIsGenerating }: any) {
+function CertificateImagePreview({ cert, studentName }: any) {
   const [imgSrc, setImgSrc] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
     const generate = async () => {
       try {
-        setIsGenerating("preview");
         const { generateCertificateImage } = await import("@/src/features/certificates/certificateGenerator");
         const src = await generateCertificateImage(
           studentName,
@@ -212,15 +203,20 @@ function CertificateImagePreview({ cert, studentName, setIsGenerating }: any) {
         if (mounted) setImgSrc(src);
       } catch (err) {
         console.error(err);
-      } finally {
-        if (mounted) setIsGenerating(null);
       }
     };
     generate();
     return () => { mounted = false; };
-  }, [cert, studentName, setIsGenerating]);
+  }, [cert, studentName]);
 
-  if (!imgSrc) return null;
+  if (!imgSrc) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-4 text-primary w-full h-full min-h-[300px]">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+        <p className="font-ui text-sm animate-pulse">جاري إنشاء المعاينة...</p>
+      </div>
+    );
+  }
 
   return (
     // eslint-disable-next-line @next/next/no-img-element

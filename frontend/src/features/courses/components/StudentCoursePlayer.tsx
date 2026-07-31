@@ -301,14 +301,13 @@ export default function StudentCoursePlayer({
         {/* Certificate Button */}
         {certificatesEnabled && !!certificateReady && (
           <div className="p-4 border-t border-surfaceBorder">
-            <button
-              onClick={handleDownloadCertificate}
-              disabled={isGeneratingCert}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-gold to-gold-soft text-inverse font-bold px-4 py-3 rounded-xl hover:shadow-gold transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            <Link
+              href="/dashboard/student/certificates"
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-gold to-gold-soft text-inverse font-bold px-4 py-3 rounded-xl hover:shadow-gold transition-all text-sm"
             >
-              {isGeneratingCert ? <Loader2 size={18} className="animate-spin" /> : <Award size={18} />}
-              {isGeneratingCert ? "جاري الإنشاء..." : "تحميل شهادة الإتمام"}
-            </button>
+              <Award size={18} />
+              معاينة شهادة الإتمام
+            </Link>
           </div>
         )}
 
