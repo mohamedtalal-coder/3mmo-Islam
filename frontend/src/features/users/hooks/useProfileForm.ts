@@ -25,7 +25,16 @@ export function useProfileForm(initialName: string, initialNotifications?: any) 
         throw new Error("كلمة المرور يجب أن تكون 6 أحرف على الأقل");
       }
 
-      const body: any = extraData ? { ...extraData } : {};
+      const body: any = {};
+      
+      if (extraData) {
+        Object.keys(extraData).forEach(key => {
+          if (extraData[key] !== undefined) {
+            body[key] = extraData[key];
+          }
+        });
+      }
+
       if (fullName !== initialName) body.fullName = fullName;
       if (password) body.password = password;
 

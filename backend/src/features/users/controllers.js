@@ -8,10 +8,10 @@ exports.updateProfile = async (req, res) => {
 
     const updateData = {};
     if (fullName) updateData.fullName = fullName;
-    if (phone !== undefined) updateData.phone = phone;
-    if (parentPhone !== undefined) updateData.parentPhone = parentPhone;
-    if (governorate !== undefined) updateData.governorate = governorate;
-    if (currentGradeId) updateData.currentGradeId = currentGradeId;
+    if (phone !== undefined) updateData.phone = phone || null;
+    if (parentPhone !== undefined) updateData.parentPhone = parentPhone || null;
+    if (governorate !== undefined) updateData.governorate = governorate || null;
+    if (currentGradeId !== undefined) updateData.currentGradeId = currentGradeId || null;
     if (email) updateData.email = email;
     if (notifyCourseUpdates !== undefined) updateData.notifyCourseUpdates = notifyCourseUpdates;
     if (notifyQuizReminders !== undefined) updateData.notifyQuizReminders = notifyQuizReminders;

@@ -77,6 +77,7 @@ export default async function StudentCoursePage({ params }: { params: { id: stri
           studentEmail={profile.email}
           studentPhone={profile.phone || ""}
           initialCertificate={data.certificate}
+          attachments={course.attachments || []}
         />
       </div>
     </div>

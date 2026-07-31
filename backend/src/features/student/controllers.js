@@ -50,7 +50,7 @@ exports.getDashboardData = async (req, res) => {
     // 3. Get lesson progress
     const progressData = await prisma.lessonProgress.findMany({
       where: { studentId: userId },
-      select: { lessonId: true }
+      select: { lessonId: true, completedAt: true }
     });
     const completedLessonIds = progressData.map(p => p.lessonId);
 
@@ -87,6 +87,7 @@ exports.getDashboardData = async (req, res) => {
       enrollments: activeEnrollments,
       certificates: certifiedCourseIds,
       completedLessonIds,
+      progressData,
       recommendedCourses
     });
   } catch (error) {
@@ -161,7 +162,13 @@ exports.getStudentCourseDetails = async (req, res) => {
         published: true,
         deletedAt: null
       },
-      select: { id: true, title: true }
+      select: { 
+        id: true, 
+        title: true,
+        attachments: {
+          select: { id: true, fileName: true, fileUrl: true, fileSize: true }
+        }
+      }
     });
 
     if (!course) {

@@ -256,8 +256,8 @@ export function StudentProfileClient({
                 <button
                   type="button"
                   onClick={() => toggleNotification(item.key)}
-                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-opacity-75 ${
-                    notifications[item.key] ? "bg-primary" : "bg-surfaceBorder"
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-opacity-75 ${
+                    notifications[item.key] ? "bg-accent/20" : "bg-surfaceBorder"
                   }`}
                   role="switch"
                   aria-checked={notifications[item.key]}
@@ -265,8 +265,8 @@ export function StudentProfileClient({
                   <span className="sr-only">Toggle {item.label}</span>
                   <span
                     aria-hidden="true"
-                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
-                      notifications[item.key] ? "-translate-x-5" : "translate-x-0"
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full shadow-lg ring-0 transition duration-200 ease-in-out ${
+                      notifications[item.key] ? "-translate-x-5 bg-accent" : "translate-x-0 bg-white"
                     }`}
                   />
                 </button>

@@ -16,8 +16,18 @@ export function LessonForm({ moduleId, nextPosition }: { moduleId: string; nextP
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!title.trim()) {
+      toast.error("اسم الدرس مطلوب.");
+      return;
+    }
     if (!videoUrl) {
       toast.error("لازم تدخل رابط الفيديو.");
+      return;
+    }
+    try {
+      new URL(videoUrl);
+    } catch {
+      toast.error("رابط الفيديو غير صحيح.");
       return;
     }
 

@@ -83,15 +83,38 @@ export default async function StudentDashboardPage() {
   const estimatedHours = Math.round(totalMinutesLearned / 60);
 
   const totalLessonsCompleted = completedLessonIds.size;
-  // Mock weekly activity data
+  const progressData = dashboardData?.progressData || [];
+  
+  // Calculate weekly activity data based on completed lessons
+  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const now = new Date();
+  const startOfWeek = new Date(now);
+  startOfWeek.setDate(now.getDate() - now.getDay()); // Sunday as start of week
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  const weeklyActivityMap = new Map();
+  dayNames.forEach(day => weeklyActivityMap.set(day, 0));
+
+  progressData.forEach((p: any) => {
+    if (p.completedAt) {
+      const completedDate = new Date(p.completedAt);
+      if (completedDate >= startOfWeek) {
+        const dayIndex = completedDate.getDay(); // 0 = Sun, 1 = Mon, etc.
+        const dayName = dayNames[dayIndex];
+        // Assuming each lesson is roughly 0.5 hours of study time
+        weeklyActivityMap.set(dayName, weeklyActivityMap.get(dayName) + 0.5);
+      }
+    }
+  });
+
   const weeklyData = [
-    { day: "Sat", hours: Math.min(totalLessonsCompleted > 0 ? 1.5 : 0, 3) },
-    { day: "Sun", hours: Math.min(totalLessonsCompleted > 0 ? 2.0 : 0, 3) },
-    { day: "Mon", hours: Math.min(totalLessonsCompleted > 1 ? 1.0 : 0, 3) },
-    { day: "Tue", hours: Math.min(totalLessonsCompleted > 2 ? 2.5 : 0, 3) },
-    { day: "Wed", hours: Math.min(totalLessonsCompleted > 3 ? 1.5 : 0, 3) },
-    { day: "Thu", hours: Math.min(totalLessonsCompleted > 0 ? 3.0 : 0, 3) },
-    { day: "Fri", hours: Math.min(totalLessonsCompleted > 0 ? 0.5 : 0, 3) },
+    { day: "Sat", hours: weeklyActivityMap.get("Sat") },
+    { day: "Sun", hours: weeklyActivityMap.get("Sun") },
+    { day: "Mon", hours: weeklyActivityMap.get("Mon") },
+    { day: "Tue", hours: weeklyActivityMap.get("Tue") },
+    { day: "Wed", hours: weeklyActivityMap.get("Wed") },
+    { day: "Thu", hours: weeklyActivityMap.get("Thu") },
+    { day: "Fri", hours: weeklyActivityMap.get("Fri") },
   ];
 
   // Completion percentage

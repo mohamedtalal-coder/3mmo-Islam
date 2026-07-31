@@ -50,6 +50,14 @@ export function AuthForm({ mode }: { mode: Mode }) {
     e.preventDefault();
     
     if (mode === "register") {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        toast.error("صيغة البريد الإلكتروني غير صحيحة.");
+        return;
+      }
+      if (password.length < 6) {
+        toast.error("كلمة السر يجب أن تكون 6 أحرف على الأقل.");
+        return;
+      }
       if (password !== confirmPassword) {
         toast.error("كلمة السر غير متطابقة.");
         return;

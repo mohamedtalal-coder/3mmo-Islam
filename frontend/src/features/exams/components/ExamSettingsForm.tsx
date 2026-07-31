@@ -35,6 +35,25 @@ export function ExamSettingsForm({ exam, onUpdate }: { exam: any, onUpdate: (dat
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    // Validation
+    if (!formData.title.trim()) {
+      toast.error("عنوان الاختبار مطلوب.");
+      return;
+    }
+    if (formData.passingScore < 1 || formData.passingScore > 100) {
+      toast.error("نسبة النجاح يجب أن تكون بين 1 و 100.");
+      return;
+    }
+    if (formData.maxAttempts < 1) {
+      toast.error("عدد المحاولات يجب أن يكون 1 على الأقل.");
+      return;
+    }
+    if (formData.durationMinutes && Number(formData.durationMinutes) < 1) {
+      toast.error("المدة الزمنية يجب أن تكون دقيقة واحدة على الأقل.");
+      return;
+    }
+
     setLoading(true);
     const toastId = toast.loading("جاري حفظ الإعدادات...");
 

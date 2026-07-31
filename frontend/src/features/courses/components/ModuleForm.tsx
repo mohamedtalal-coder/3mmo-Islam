@@ -15,6 +15,10 @@ export function ModuleForm({ courseId, nextPosition }: { courseId: string; nextP
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!title.trim()) {
+      toast.error("اسم الوحدة مطلوب.");
+      return;
+    }
     setLoading(true);
 
     try {

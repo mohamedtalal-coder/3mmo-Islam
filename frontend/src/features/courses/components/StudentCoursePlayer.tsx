@@ -43,6 +43,7 @@ export default function StudentCoursePlayer({
   studentEmail?: string;
   studentPhone?: string;
   initialCertificate?: any;
+  attachments?: any[];
 }) {
   const {
     activeItem,
@@ -137,12 +138,7 @@ export default function StudentCoursePlayer({
     ...(commentsEnabled ? [{ id: "discussion" as ContentTab, label: "المناقشة", icon: <MessageSquare size={15} /> }] : []),
   ];
 
-  // Mock resources for demo
-  const mockResources = [
-    { name: "ملخص الدرس.pdf", size: "2.4 MB", type: "pdf" },
-    { name: "تمارين إضافية.pdf", size: "1.8 MB", type: "pdf" },
-    { name: "الشرائح التوضيحية.pptx", size: "5.1 MB", type: "pptx" },
-  ];
+  const courseAttachments = attachments || [];
 
   return (
     <div className="flex flex-col md:flex-row h-full overflow-hidden absolute inset-0 z-10">
@@ -529,26 +525,28 @@ export default function StudentCoursePlayer({
                 {/* Resources Tab */}
                 {activeTab === "resources" && (
                   <div className="animate-fade-in space-y-4">
-                    {mockResources.map((resource, i) => (
+                    {courseAttachments.map((resource: any, i: number) => (
                       <div key={i} className="bg-surface shadow-sm rounded-[18px] p-5 flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center">
-                            <FileText size={18} className="text-accent" />
+                            <FileText size={20} className="text-accent" />
                           </div>
                           <div>
-                            <h4 className="font-ui font-bold text-primary text-sm">{resource.name}</h4>
-                            <span className="text-[11px] text-muted font-ui">{resource.size}</span>
+                            <h4 className="font-semibold text-sm text-primary mb-1">{resource.fileName}</h4>
+                            <p className="text-xs text-muted">{(Number(resource.fileSize || 0) / (1024 * 1024)).toFixed(2)} MB</p>
                           </div>
                         </div>
-                        <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gold/10 text-accent font-ui text-sm font-bold hover:bg-gold/20 transition-colors">
+                        <a href={resource.fileUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gold/10 text-accent font-ui text-sm font-bold hover:bg-gold/20 transition-colors">
                           <Download size={14} />
                           تحميل
-                        </button>
+                        </a>
                       </div>
                     ))}
-                    <p className="text-center text-muted text-xs font-ui mt-4">
-                      المرفقات المعروضة هي عينة توضيحية
-                    </p>
+                    {courseAttachments.length === 0 && (
+                      <p className="text-center text-muted text-xs font-ui mt-4">
+                        لا توجد مرفقات لهذا الكورس
+                      </p>
+                    )}
                   </div>
                 )}
 
