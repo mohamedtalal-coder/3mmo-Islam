@@ -54,7 +54,7 @@ exports.getPublicCourseDetails = async (req, res) => {
 
 exports.getHomeData = async (req, res) => {
   try {
-    const [courses, grades, settings, courseCount, studentCount, faqs] = await Promise.all([
+    let [courses, grades, settings, courseCount, studentCount, faqs] = await Promise.all([
       prisma.course.findMany({
         where: { deletedAt: null, published: true },
         include: {
@@ -81,6 +81,22 @@ exports.getHomeData = async (req, res) => {
         orderBy: { position: 'asc' }
       })
     ]);
+
+    // Seed FAQs if none exist
+    if (faqs.length === 0) {
+      await prisma.faq.createMany({
+        data: [
+          { question: "كيف يمكنني الاشتراك في الكورسات؟", answer: "يمكنك الاشتراك من خلال إنشاء حساب كطالب، ثم تصفح الكورسات المتاحة واختيار الكورس المناسب لك والنقر على زر 'اشترك الآن'.", position: 1 },
+          { question: "هل يمكنني مشاهدة الدروس في أي وقت؟", answer: "نعم، جميع الدروس مسجلة ومتاحة لك لمشاهدتها في أي وقت يناسبك بمجرد اشتراكك في الكورس.", position: 2 },
+          { question: "هل يوجد شهادة بعد إتمام الكورس؟", answer: "نعم، بمجرد اجتيازك للاختبار النهائي لكل كورس، ستحصل على شهادة إتمام معتمدة من المنصة.", position: 3 },
+          { question: "كيف يمكنني التواصل مع المعلم؟", answer: "يمكنك طرح أسئلتك في قسم التعليقات أسفل كل درس، وسيقوم المعلم بالإجابة عليها في أقرب وقت.", position: 4 }
+        ]
+      });
+      faqs = await prisma.faq.findMany({
+        where: { isActive: true },
+        orderBy: { position: 'asc' }
+      });
+    }
 
     // Format settings to match frontend expectations
     const formattedSettings = settings ? {

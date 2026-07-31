@@ -22,8 +22,8 @@ export function ReviewSubmitForm({ courseId }: { courseId: string }) {
       });
       setIsSubmitted(true);
       toast.success("تم إرسال تقييمك بنجاح! شكراً لك.");
-    } catch (error) {
-      toast.error("حدث خطأ أثناء إرسال التقييم");
+    } catch (error: any) {
+      toast.error(error.message || "حدث خطأ أثناء إرسال التقييم");
     } finally {
       setIsSubmitting(false);
     }
