@@ -29,6 +29,7 @@ export default function StudentCoursePlayer({
   studentEmail = "",
   studentPhone = "",
   initialCertificate = null,
+  attachments = [],
 }: {
   courseId: string;
   courseTitle: string;
