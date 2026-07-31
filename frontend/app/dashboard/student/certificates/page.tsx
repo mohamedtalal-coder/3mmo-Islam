@@ -26,6 +26,10 @@ export default async function CertificatesPage() {
     courseId: cert.courseId,
     courseTitle: cert.course?.title || "دورة",
     courseThumbnail: cert.course?.thumbnailUrl || null,
+    contextName: cert.contextName || cert.course?.title || "دورة",
+    score: cert.score ?? null,
+    rank: cert.rank ?? null,
+    conditionType: cert.conditionType || 'SCORE',
   }));
 
   return <StudentCertificatesClient certificates={processedCerts} studentName={profile?.fullName || ""} />;

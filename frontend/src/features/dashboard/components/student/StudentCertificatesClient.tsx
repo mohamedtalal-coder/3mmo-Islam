@@ -15,6 +15,10 @@ interface Certificate {
   courseId: string;
   courseTitle: string;
   courseThumbnail: string | null;
+  contextName: string;
+  score: number | null;
+  rank: number | null;
+  conditionType: string;
 }
 
 export function StudentCertificatesClient({ certificates, studentName }: { certificates: Certificate[], studentName: string }) {
@@ -30,15 +34,18 @@ export function StudentCertificatesClient({ certificates, studentName }: { certi
       const { generateCertificate } = await import("@/src/features/certificates/certificateGenerator");
       const blob = await generateCertificate(
         studentName,
-        cert.courseTitle,
+        cert.contextName,
         cert.issuedAt,
-        cert.certificateNumber
+        cert.certificateNumber,
+        cert.score,
+        cert.rank,
+        cert.conditionType
       );
       
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `شهادة_إتمام_${cert.courseTitle.replace(/\\s+/g, '_')}.pdf`;
+      a.download = `شهادة_إتمام_${cert.contextName.replace(/\\s+/g, '_')}.pdf`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -196,9 +203,12 @@ function CertificateImagePreview({ cert, studentName }: any) {
         const { generateCertificateImage } = await import("@/src/features/certificates/certificateGenerator");
         const src = await generateCertificateImage(
           studentName,
-          cert.courseTitle,
+          cert.contextName,
           cert.issuedAt,
-          cert.certificateNumber
+          cert.certificateNumber,
+          cert.score,
+          cert.rank,
+          cert.conditionType
         );
         if (mounted) setImgSrc(src);
       } catch (err) {

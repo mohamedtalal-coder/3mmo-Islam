@@ -310,26 +310,29 @@ exports.submitStudentQuiz = async (req, res) => {
     let isNewCertificate = false;
 
     if (passed && quiz.hasCertificate) {
-      const existingCert = await prisma.certificate.findFirst({
-        where: {
-          studentId: userId,
-          courseId: quiz.courseId,
-        },
-      });
-
-      if (existingCert) {
-        certificate = existingCert;
-      } else {
-        const certificateNumber = `CERT-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
-        certificate = await prisma.certificate.create({
-          data: {
+      if (quiz.certificateCondition !== 'TOP_N') {
+        const existingCert = await prisma.certificate.findFirst({
+          where: {
             studentId: userId,
             courseId: quiz.courseId,
             quizId: quiz.id,
-            certificateNumber,
           },
         });
-        isNewCertificate = true;
+
+        if (existingCert) {
+          certificate = existingCert;
+        } else {
+          const certificateNumber = `CERT-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+          certificate = await prisma.certificate.create({
+            data: {
+              studentId: userId,
+              courseId: quiz.courseId,
+              quizId: quiz.id,
+              certificateNumber,
+            },
+          });
+          isNewCertificate = true;
+        }
       }
     }
 
@@ -422,17 +425,109 @@ exports.getStudentCertificates = async (req, res) => {
   try {
     const studentId = req.user.id;
 
+    // 1. Lazy evaluation: Generate TOP_N certificates if deadline passed
+    const closedTopNQuizzes = await prisma.quiz.findMany({
+      where: {
+        hasCertificate: true,
+        certificateCondition: 'TOP_N',
+        endDate: { lt: new Date() }
+      }
+    });
+
+    // Helper function to get ranked students for a quiz
+    const getQuizRankings = async (quizId) => {
+      const attempts = await prisma.quizAttempt.findMany({
+        where: { quizId, passed: true },
+        orderBy: [
+          { score: 'desc' },
+          { timeTakenSeconds: 'asc' },
+          { createdAt: 'asc' }
+        ]
+      });
+      // Group by student, keeping the best (first encountered due to sorting)
+      const bestAttempts = [];
+      const seenStudents = new Set();
+      for (const attempt of attempts) {
+        if (!seenStudents.has(attempt.studentId)) {
+          seenStudents.add(attempt.studentId);
+          bestAttempts.push(attempt);
+        }
+      }
+      return bestAttempts;
+    };
+
+    for (const quiz of closedTopNQuizzes) {
+      const topN = quiz.certificateConditionValue || 10;
+      const rankings = await getQuizRankings(quiz.id);
+      const studentRankIndex = rankings.findIndex(a => a.studentId === studentId);
+      
+      if (studentRankIndex !== -1 && studentRankIndex < topN) {
+        // Student is in top N, ensure certificate exists
+        const existingCert = await prisma.certificate.findFirst({
+          where: { studentId, quizId: quiz.id }
+        });
+        if (!existingCert) {
+          const certificateNumber = `CERT-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+          await prisma.certificate.create({
+            data: {
+              studentId,
+              courseId: quiz.courseId,
+              quizId: quiz.id,
+              certificateNumber
+            }
+          });
+        }
+      }
+    }
+
+    // 2. Fetch all certificates for the student
     const certificates = await prisma.certificate.findMany({
       where: { studentId },
       include: {
-        course: {
-          select: { id: true, title: true, thumbnailUrl: true }
+        course: { select: { id: true, title: true, thumbnailUrl: true } },
+        quiz: {
+          select: { 
+            id: true, 
+            title: true, 
+            certificateCondition: true,
+            lesson: { select: { title: true } },
+            module: { select: { title: true } }
+          }
         }
       },
       orderBy: { issuedAt: 'desc' }
     });
 
-    res.status(200).json({ certificates });
+    // 3. Attach score, rank, and context name
+    const enrichedCertificates = await Promise.all(certificates.map(async (cert) => {
+      let contextName = cert.course?.title || 'دورة غير معروفة';
+      let score = null;
+      let rank = null;
+      let conditionType = 'ALL';
+
+      if (cert.quiz) {
+        contextName = cert.quiz.lesson?.title || cert.quiz.module?.title || cert.quiz.title;
+        conditionType = cert.quiz.certificateCondition || 'SCORE';
+        
+        const rankings = await getQuizRankings(cert.quiz.id);
+        const attemptIndex = rankings.findIndex(a => a.studentId === studentId);
+        
+        if (attemptIndex !== -1) {
+          score = rankings[attemptIndex].score;
+          rank = attemptIndex + 1;
+        }
+      }
+
+      return {
+        ...cert,
+        contextName,
+        score,
+        rank,
+        conditionType
+      };
+    }));
+
+    res.status(200).json({ certificates: enrichedCertificates });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to fetch certificates' });
