@@ -384,6 +384,7 @@ model QuizQuestion {
   id           String             @id @default(uuid())
   quizId       String
   questionText String
+  imageUrl     String?
   questionType QuestionType       @default(MULTIPLE_CHOICE)
   difficulty   QuestionDifficulty @default(MEDIUM)
   marks        Float              @default(1)
@@ -402,6 +403,7 @@ model QuizOption {
   id         String   @id @default(uuid())
   questionId String
   optionText String
+  imageUrl     String?
   isCorrect  Boolean  @default(false)
   position   Int      @default(0)
   createdAt  DateTime @default(now())

@@ -9,8 +9,9 @@ import { fetchApi } from "@/src/lib/api";
 type QuizQuestion = {
   id: string;
   questionText: string;
+  imageUrl?: string;
   questionType: "multiple_choice" | "true_false";
-  options: { id: string; optionText: string }[];
+  options: { id: string; optionText: string; imageUrl?: string }[];
 };
 
 type QuizData = {
@@ -147,29 +148,43 @@ export function QuizPlayer({ quizId, onPassed }: { quizId: string; onPassed?: (c
                   <span className="w-8 h-8 rounded-full bg-gold/20 text-accent flex items-center justify-center font-bold font-ui shrink-0 mt-1">
                     {index + 1}
                   </span>
-                  <p className="font-display text-xl text-primary mt-1 leading-relaxed">
-                    {q.questionText}
-                  </p>
+                  <div className="flex-1">
+                    <p className="font-display text-xl text-primary mt-1 leading-relaxed">
+                      {q.questionText}
+                    </p>
+                    {q.imageUrl && (
+                      <div className="mt-4">
+                        <img src={q.imageUrl} alt="Question image" className="max-h-64 object-contain rounded-xl border border-primary/10" />
+                      </div>
+                    )}
+                  </div>
                 </div>
                 
                 <div className="space-y-3 pr-12">
                   {q.options.map((o) => (
                     <label
                       key={o.id}
-                      className={`flex items-center gap-3 border rounded-[10px] px-4 py-3 cursor-pointer transition-all ${
+                      className={`flex flex-col border rounded-[10px] px-4 py-3 cursor-pointer transition-all ${
                         answers[q.id] === o.id 
                           ? "border-primary bg-primary/5 text-primary" 
                           : "border-primary/10 hover:border-primary/20 hover:bg-surfaceHover text-muted hover:text-primary"
                       }`}
                     >
-                      <input
-                        type="radio"
-                        name={q.id}
-                        className="w-5 h-5 accent-primary"
-                        checked={answers[q.id] === o.id}
-                        onChange={() => setAnswers((a) => ({ ...a, [q.id]: o.id }))}
-                      />
-                      <span className="font-body text-sm mt-0.5">{o.optionText}</span>
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="radio"
+                          name={q.id}
+                          className="w-5 h-5 accent-primary shrink-0"
+                          checked={answers[q.id] === o.id}
+                          onChange={() => setAnswers((a) => ({ ...a, [q.id]: o.id }))}
+                        />
+                        <span className="font-body text-sm mt-0.5">{o.optionText}</span>
+                      </div>
+                      {o.imageUrl && (
+                        <div className="mt-2 mr-8">
+                          <img src={o.imageUrl} alt="Option image" className="max-h-40 object-contain rounded-lg border border-primary/10" />
+                        </div>
+                      )}
                     </label>
                   ))}
                 </div>

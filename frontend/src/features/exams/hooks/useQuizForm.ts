@@ -3,9 +3,10 @@ import { useRouter } from "next/navigation";
 import { fetchApi } from "@/src/lib/api";
 import { toast } from "sonner";
 
-export type OptionDraft = { text: string; correct: boolean };
+export type OptionDraft = { text: string; correct: boolean; imageUrl?: string };
 export type QuestionDraft = {
   text: string;
+  imageUrl?: string;
   type: "multiple_choice" | "true_false";
   options: OptionDraft[];
 };

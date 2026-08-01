@@ -679,10 +679,12 @@ exports.createQuiz = async (req, res) => {
           create: Array.isArray(questions) ? questions.map((q, i) => ({
             questionText: q.text || '',
             questionType: q.type || 'multiple_choice',
+            imageUrl: q.imageUrl || null,
             position: i,
             options: {
               create: Array.isArray(q.options) ? q.options.map((o, j) => ({
                 optionText: o.text || '',
+                imageUrl: o.imageUrl || null,
                 isCorrect: Boolean(o.correct),
                 position: j
               })) : []
