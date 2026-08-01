@@ -36,6 +36,8 @@ export function QuizPlayer({ quizId, onPassed }: { quizId: string; onPassed?: (c
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const QUESTIONS_PER_PAGE = 10;
 
   useEffect(() => {
     let cancelled = false;
@@ -43,6 +45,7 @@ export function QuizPlayer({ quizId, onPassed }: { quizId: string; onPassed?: (c
     setAnswers({});
     setResult(null);
     setLoading(true);
+    setCurrentPage(1);
 
     fetchApi(`/student/quizzes/${quizId}`)
       .then((data) => {
@@ -57,6 +60,10 @@ export function QuizPlayer({ quizId, onPassed }: { quizId: string; onPassed?: (c
       cancelled = true;
     };
   }, [quizId]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentPage]);
 
   async function handleSubmit() {
     if (!quiz) return;
@@ -95,10 +102,13 @@ export function QuizPlayer({ quizId, onPassed }: { quizId: string; onPassed?: (c
   if (!quiz) return null;
 
   const allAnswered = quiz.questions.every((q) => answers[q.id]);
+  const totalPages = Math.ceil(quiz.questions.length / QUESTIONS_PER_PAGE);
+  const startIndex = (currentPage - 1) * QUESTIONS_PER_PAGE;
+  const currentQuestions = quiz.questions.slice(startIndex, startIndex + QUESTIONS_PER_PAGE);
 
   return (
     <div className="w-full flex flex-col items-center py-10 px-4 md:px-8 lg:px-12">
-      <div className="w-full max-w-5xl bg-surface border border-primary/5 rounded-[32px] shadow-2xl p-8 md:p-12 relative">
+      <div className="w-full max-w-6xl bg-surface border border-primary/5 rounded-[32px] shadow-2xl p-8 md:p-12 relative">
         <div className="absolute top-0 right-0 w-40 h-40 bg-gold/10 rounded-full blur-3xl pointer-events-none" />
         
         <div className="border-b border-gold/10 pb-6 mb-8 text-center relative z-10">
@@ -143,11 +153,11 @@ export function QuizPlayer({ quizId, onPassed }: { quizId: string; onPassed?: (c
           </div>
         ) : (
           <div className="space-y-8 relative z-10">
-            {quiz.questions.map((q, index) => (
+            {currentQuestions.map((q, index) => (
               <div key={q.id} className="bg-surface shadow-sm border border-primary/5 rounded-[18px] p-6">
                 <div className="flex items-start gap-4 mb-6">
                   <span className="w-8 h-8 rounded-full bg-gold/20 text-accent flex items-center justify-center font-bold font-ui shrink-0 mt-1">
-                    {index + 1}
+                    {startIndex + index + 1}
                   </span>
                   <div className="flex-1">
                     <p className="font-display text-xl text-primary mt-1 leading-relaxed">
@@ -207,23 +217,51 @@ export function QuizPlayer({ quizId, onPassed }: { quizId: string; onPassed?: (c
                   ))}
                 </div>
               </div>
-            ))}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 pt-6 border-t border-primary/10">
+              <div className="flex items-center gap-3 w-full sm:w-auto">
+                <Button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  variant="outline"
+                  className="w-full sm:w-auto"
+                >
+                  الصفحة السابقة
+                </Button>
+                <div className="font-ui text-sm text-muted hidden sm:block whitespace-nowrap">
+                  صفحة {currentPage} من {totalPages}
+                </div>
+                {currentPage < totalPages ? (
+                  <Button
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    variant="primary"
+                    className="w-full sm:w-auto"
+                  >
+                    الصفحة التالية
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleSubmit}
+                    disabled={!allAnswered || submitting}
+                    isLoading={submitting}
+                    variant="primary"
+                    className="w-full sm:w-auto min-w-[150px]"
+                    leftIcon={!submitting && <Send size={20} className={document.dir === 'rtl' ? "rotate-180" : ""} />}
+                  >
+                    إرسال الإجابات
+                  </Button>
+                )}
+              </div>
+              
+              <div className="font-ui text-sm text-muted sm:hidden">
+                صفحة {currentPage} من {totalPages}
+              </div>
 
-            <Button
-              onClick={handleSubmit}
-              disabled={!allAnswered || submitting}
-              isLoading={submitting}
-              className="w-full mt-8"
-              size="lg"
-              leftIcon={!submitting && <Send size={20} className={document.dir === 'rtl' ? "rotate-180" : ""} />}
-            >
-              إرسال الإجابات
-            </Button>
-            {!allAnswered && (
-              <p className="text-center text-muted text-xs font-ui mt-4">
-                يجب الإجابة على جميع الأسئلة لتسليم الاختبار
-              </p>
-            )}
+              {!allAnswered && currentPage === totalPages && (
+                <p className="text-center sm:text-right text-muted text-xs font-ui">
+                  يجب الإجابة على جميع الأسئلة لتسليم الاختبار
+                </p>
+              )}
+            </div>
           </div>
         )}
 
