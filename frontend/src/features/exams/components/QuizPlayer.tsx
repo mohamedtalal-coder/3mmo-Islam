@@ -97,9 +97,9 @@ export function QuizPlayer({ quizId, onPassed }: { quizId: string; onPassed?: (c
   const allAnswered = quiz.questions.every((q) => answers[q.id]);
 
   return (
-    <div className="flex-1 flex flex-col items-center p-6 md:p-10 lg:p-12 overflow-y-auto w-full custom-scrollbar">
-      <div className="w-full max-w-3xl bg-surface border border-primary/5 rounded-[24px] shadow-xl p-8 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-gold/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="w-full flex flex-col items-center py-10 px-4 md:px-8 lg:px-12">
+      <div className="w-full max-w-5xl bg-surface border border-primary/5 rounded-[32px] shadow-2xl p-8 md:p-12 relative">
+        <div className="absolute top-0 right-0 w-40 h-40 bg-gold/10 rounded-full blur-3xl pointer-events-none" />
         
         <div className="border-b border-gold/10 pb-6 mb-8 text-center relative z-10">
           <h2 className="font-display text-3xl text-accent mb-2">{quiz.title}</h2>
