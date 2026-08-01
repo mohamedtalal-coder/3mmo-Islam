@@ -107,8 +107,8 @@ export function QuizPlayer({ quizId, onPassed }: { quizId: string; onPassed?: (c
   const currentQuestions = quiz.questions.slice(startIndex, startIndex + QUESTIONS_PER_PAGE);
 
   return (
-    <div className="w-full flex flex-col items-center py-10 px-4 md:px-8 lg:px-12">
-      <div className="w-full max-w-6xl bg-surface border border-primary/5 rounded-[32px] shadow-2xl p-8 md:p-12 relative">
+    <div className="w-full flex flex-col items-center py-6 px-4 md:px-8 lg:px-12 xl:px-24">
+      <div className="w-full bg-surface border border-primary/5 rounded-[32px] shadow-2xl p-8 md:p-12 relative">
         <div className="absolute top-0 right-0 w-40 h-40 bg-gold/10 rounded-full blur-3xl pointer-events-none" />
         
         <div className="border-b border-gold/10 pb-6 mb-8 text-center relative z-10">
@@ -168,7 +168,7 @@ export function QuizPlayer({ quizId, onPassed }: { quizId: string; onPassed?: (c
                         <img 
                           src={q.imageUrl} 
                           alt="Question image" 
-                          className="max-h-64 object-contain rounded-xl border border-primary/10 cursor-zoom-in hover:opacity-90 transition-opacity" 
+                          className="max-h-96 object-contain rounded-xl border border-primary/10 cursor-zoom-in hover:opacity-90 transition-opacity" 
                           onClick={(e) => {
                             e.preventDefault();
                             setZoomedImage(q.imageUrl!);
@@ -200,11 +200,11 @@ export function QuizPlayer({ quizId, onPassed }: { quizId: string; onPassed?: (c
                         <span className="font-body text-sm mt-0.5">{o.optionText}</span>
                       </div>
                       {o.imageUrl && (
-                        <div className="mt-2 mr-8">
+                        <div className="mt-4 mb-2 mr-8">
                           <img 
                             src={o.imageUrl} 
                             alt="Option image" 
-                            className="max-h-40 object-contain rounded-lg border border-primary/10 cursor-zoom-in hover:opacity-90 transition-opacity"
+                            className="max-h-64 object-contain rounded-lg border border-primary/10 cursor-zoom-in hover:opacity-90 transition-opacity"
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
