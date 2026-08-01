@@ -7,13 +7,11 @@ const getMainTeacherId = async () => {
   return teacher ? teacher.id : null;
 };
 
-const hasPermission = (role, resource) => {
-  if (role === 'TEACHER') return true;
-  if (role === 'COURSE_ADMIN') {
-    return ['DASHBOARD', 'COURSE'].includes(resource);
-  }
-  if (role === 'EXAM_ADMIN') {
-    return ['DASHBOARD', 'QUIZ'].includes(resource);
+const hasPermission = (user, resource) => {
+  if (!user) return false;
+  if (user.role === 'TEACHER') return true;
+  if (user.role === 'ASSISTANT') {
+    return user.permissions && user.permissions.includes(resource);
   }
   return false;
 };
@@ -24,7 +22,7 @@ exports.getDashboardData = async (req, res) => {
     const userId = req.user.id;
     const userRole = req.user.role;
 
-    if (!hasPermission(userRole, 'DASHBOARD')) {
+    if (!hasPermission(req.user, 'DASHBOARD')) {
       return res.status(403).json({ error: 'Access denied' });
     }
 
@@ -196,7 +194,7 @@ exports.getTeacherCourses = async (req, res) => {
     const userId = req.user.id;
     const userRole = req.user.role;
 
-    if (!hasPermission(userRole, 'DASHBOARD')) {
+    if (!hasPermission(req.user, 'DASHBOARD')) {
       return res.status(403).json({ error: 'Access denied' });
     }
 
@@ -224,7 +222,7 @@ exports.getTeacherCourseDetails = async (req, res) => {
     const userId = req.user.id;
     const courseId = req.params.id;
 
-    if (!hasPermission(req.user.role, 'COURSE')) {
+    if (!hasPermission(req.user, 'COURSE')) {
       return res.status(403).json({ error: 'Access denied' });
     }
 
@@ -273,7 +271,7 @@ exports.getTeacherCourseDetails = async (req, res) => {
 exports.createCourse = async (req, res) => {
   try {
     const userId = req.user.id;
-    if (!hasPermission(req.user.role, 'COURSE')) {
+    if (!hasPermission(req.user, 'COURSE')) {
       return res.status(403).json({ error: 'Access denied' });
     }
 
@@ -1216,7 +1214,7 @@ exports.updateSettings = async (req, res) => {
 
 exports.getGrades = async (req, res) => {
   try {
-    if (!hasPermission(req.user.role, 'GRADE')) {
+    if (!hasPermission(req.user, 'GRADE')) {
       return res.status(403).json({ error: 'Access denied' });
     }
 
@@ -1253,7 +1251,7 @@ exports.getGrades = async (req, res) => {
 
 exports.createGrade = async (req, res) => {
   try {
-    if (!hasPermission(req.user.role, 'GRADE')) {
+    if (!hasPermission(req.user, 'GRADE')) {
       return res.status(403).json({ error: 'Access denied' });
     }
 
@@ -1306,7 +1304,7 @@ exports.createGrade = async (req, res) => {
 
 exports.updateGrade = async (req, res) => {
   try {
-    if (!hasPermission(req.user.role, 'GRADE')) {
+    if (!hasPermission(req.user, 'GRADE')) {
       return res.status(403).json({ error: 'Access denied' });
     }
 
@@ -1346,7 +1344,7 @@ exports.updateGrade = async (req, res) => {
 
 exports.deleteGrade = async (req, res) => {
   try {
-    if (!hasPermission(req.user.role, 'GRADE')) {
+    if (!hasPermission(req.user, 'GRADE')) {
       return res.status(403).json({ error: 'Access denied' });
     }
 
@@ -1388,7 +1386,7 @@ exports.deleteGrade = async (req, res) => {
 
 exports.reorderGrades = async (req, res) => {
   try {
-    if (!hasPermission(req.user.role, 'GRADE')) {
+    if (!hasPermission(req.user, 'GRADE')) {
       return res.status(403).json({ error: 'Access denied' });
     }
 
