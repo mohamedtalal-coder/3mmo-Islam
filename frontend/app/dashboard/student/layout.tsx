@@ -14,7 +14,7 @@ export default async function StudentLayout({
   }
 
   const role = profile.role?.toUpperCase();
-  if (role === "TEACHER") {
+  if (role === "TEACHER" || role === "ASSISTANT") {
     redirect("/dashboard/teacher");
   }
 

@@ -22,7 +22,7 @@ export function TeacherShell({
   user
 }: { 
   children: React.ReactNode;
-  user?: { name: string; avatar?: string; role?: string };
+  user?: { name: string; avatar?: string; role?: string; permissions?: string[] };
 }) {
   const role = user?.role || "TEACHER";
   const [unreadCount, setUnreadCount] = useState(0);

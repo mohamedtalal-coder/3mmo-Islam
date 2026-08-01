@@ -14,14 +14,15 @@ export default async function TeacherLayout({
   }
 
   const role = profile.role?.toUpperCase();
-  if (role !== "TEACHER" && role !== "COURSE_ADMIN" && role !== "EXAM_ADMIN") {
+  if (role !== "TEACHER" && role !== "ASSISTANT") {
     redirect("/dashboard/student");
   }
 
   const name = profile.fullName || "معلم";
+  const permissions = profile.permissions || [];
 
   return (
-    <TeacherShell user={{ name, role }}>
+    <TeacherShell user={{ name, role, permissions }}>
       {children}
     </TeacherShell>
   );
