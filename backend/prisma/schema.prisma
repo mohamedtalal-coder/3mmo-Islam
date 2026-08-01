@@ -15,8 +15,7 @@ datasource db {
 
 enum UserRole {
   TEACHER
-  COURSE_ADMIN
-  EXAM_ADMIN
+  ASSISTANT
   STUDENT
 }
 
@@ -76,6 +75,7 @@ model User {
   passwordHash          String // Replaces Supabase Auth
   fullName              String
   role                  UserRole      @default(STUDENT)
+  permissions           String[]      @default([])
   phone                 String?
   lastLoginAt           DateTime?
   accountStatus         AccountStatus @default(ACTIVE)

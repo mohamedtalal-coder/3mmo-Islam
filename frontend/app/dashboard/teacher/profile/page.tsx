@@ -14,7 +14,7 @@ export default async function TeacherProfilePage() {
       <div className="absolute top-0 right-0 w-64 h-64 bg-primary rounded-full blur-[100px] opacity-30 pointer-events-none" />
       
       <div className="relative z-10 pt-10">
-        <ProfileForm initialName={profile?.fullName || ""} userRole="teacher" />
+        <ProfileForm initialName={profile?.fullName || ""} userRole={profile.role as any} />
       </div>
     </main>
   );

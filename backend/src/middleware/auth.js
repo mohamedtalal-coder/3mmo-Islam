@@ -47,14 +47,9 @@ const requirePermission = (resource) => {
       return next();
     }
     
-    if (role === 'COURSE_ADMIN') {
-      if (['DASHBOARD', 'COURSE', 'GRADE', 'SETTINGS'].includes(resource)) {
-        return next();
-      }
-    }
-    
-    if (role === 'EXAM_ADMIN') {
-      if (['DASHBOARD', 'QUIZ', 'STUDENT', 'SETTINGS'].includes(resource)) {
+    if (role === 'ASSISTANT') {
+      // If resource is DASHBOARD and they have it, or if we check specific resource
+      if (req.user.permissions && req.user.permissions.includes(resource)) {
         return next();
       }
     }

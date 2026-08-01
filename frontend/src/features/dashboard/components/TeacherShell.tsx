@@ -39,14 +39,23 @@ export function TeacherShell({
       : link
   );
   
-  if (role === "COURSE_ADMIN") {
-    filteredLinks = filteredLinks.filter(l => 
-      l.href === "/dashboard/teacher/courses"
-    );
-  } else if (role === "EXAM_ADMIN") {
-    filteredLinks = filteredLinks.filter(l => 
-      l.href === "/dashboard/teacher/quizzes"
-    );
+  if (role === "ASSISTANT") {
+    const perms = (user as any)?.permissions || [];
+    filteredLinks = filteredLinks.filter(l => {
+      if (l.href === "/dashboard/teacher") return perms.includes("DASHBOARD");
+      if (l.href === "/dashboard/teacher/grades") return perms.includes("GRADE");
+      if (l.href === "/dashboard/teacher/courses") return perms.includes("COURSE");
+      if (l.href === "/dashboard/teacher/students") return perms.includes("STUDENT");
+      if (l.href === "/dashboard/teacher/quizzes") return perms.includes("QUIZ");
+      if (l.href === "/dashboard/teacher/reviews") return perms.includes("REVIEW");
+      if (l.href === "/dashboard/teacher/faqs") return perms.includes("FAQ");
+      if (l.href === "/dashboard/teacher/notifications") return true; // maybe allow notifications for everyone
+      if (l.href === "/dashboard/teacher/settings") return perms.includes("SETTINGS");
+      return false;
+    });
+  } else if (role === "TEACHER") {
+    // Teachers get access to the assistants management page
+    filteredLinks.push({ label: "المساعدين", href: "/dashboard/teacher/assistants", icon: Users });
   }
 
   return (

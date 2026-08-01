@@ -6,7 +6,7 @@ const { sendVerificationEmail } = require('../../services/mailer');
 
 const generateToken = (user) => {
   return jwt.sign(
-    { id: user.id, email: user.email, role: user.role },
+    { id: user.id, email: user.email, role: user.role, permissions: user.permissions || [] },
     process.env.JWT_SECRET,
     { expiresIn: '7d' }
   );
@@ -83,7 +83,8 @@ exports.register = async (req, res) => {
         id: user.id,
         email: user.email,
         fullName: user.fullName,
-        role: user.role
+        role: user.role,
+        permissions: user.permissions || []
       }
     });
   } catch (error) {
@@ -143,7 +144,8 @@ exports.login = async (req, res) => {
         id: user.id,
         email: user.email,
         fullName: user.fullName,
-        role: user.role
+        role: user.role,
+        permissions: user.permissions || []
       }
     });
   } catch (error) {
@@ -170,7 +172,8 @@ exports.me = async (req, res) => {
         notifyCourseUpdates: true,
         notifyQuizReminders: true,
         notifyCertificates: true,
-        notifyPayments: true
+        notifyPayments: true,
+        permissions: true
       }
     });
 

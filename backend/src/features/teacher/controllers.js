@@ -1513,3 +1513,132 @@ exports.deleteQuestion = async (req, res) => {
     res.status(500).json({ error: 'Failed to delete question' });
   }
 };
+
+// ==========================================
+// ASSISTANT MANAGEMENT
+// ==========================================
+
+exports.getAssistants = async (req, res) => {
+  try {
+    const assistants = await prisma.user.findMany({
+      where: { role: 'ASSISTANT' },
+      select: {
+        id: true,
+        email: true,
+        fullName: true,
+        permissions: true,
+        createdAt: true,
+        lastLoginAt: true
+      }
+    });
+    res.json(assistants);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch assistants' });
+  }
+};
+
+exports.createAssistant = async (req, res) => {
+  try {
+    const { email, password, fullName, permissions } = req.body;
+    
+    if (!email || !password || !fullName) {
+      return res.status(400).json({ error: 'Email, password, and full name are required' });
+    }
+
+    const bcrypt = require('bcryptjs');
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(password, salt);
+
+    const assistant = await prisma.user.create({
+      data: {
+        email,
+        passwordHash,
+        fullName,
+        role: 'ASSISTANT',
+        permissions: permissions || [],
+        isVerified: true
+      },
+      select: {
+        id: true,
+        email: true,
+        fullName: true,
+        permissions: true,
+        createdAt: true
+      }
+    });
+
+    res.status(201).json(assistant);
+  } catch (error) {
+    console.error(error);
+    if (error.code === 'P2002') {
+      return res.status(400).json({ error: 'Email already exists' });
+    }
+    res.status(500).json({ error: 'Failed to create assistant' });
+  }
+};
+
+exports.updateAssistant = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { fullName, permissions } = req.body;
+    
+    const assistant = await prisma.user.update({
+      where: { id },
+      data: {
+        ...(fullName && { fullName }),
+        ...(permissions && { permissions })
+      },
+      select: {
+        id: true,
+        email: true,
+        fullName: true,
+        permissions: true
+      }
+    });
+
+    res.json(assistant);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to update assistant' });
+  }
+};
+
+exports.resetAssistantPassword = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { password } = req.body;
+    
+    if (!password) {
+      return res.status(400).json({ error: 'New password is required' });
+    }
+
+    const bcrypt = require('bcryptjs');
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(password, salt);
+
+    await prisma.user.update({
+      where: { id },
+      data: { passwordHash }
+    });
+
+    res.json({ message: 'Password updated successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to reset password' });
+  }
+};
+
+exports.deleteAssistant = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await prisma.user.delete({
+      where: { id }
+    });
+    res.json({ message: 'Assistant deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to delete assistant' });
+  }
+};
+

@@ -9,7 +9,7 @@ export function ProfileForm({
   userRole 
 }: { 
   initialName: string, 
-  userRole: "teacher" | "student" 
+  userRole: "TEACHER" | "STUDENT" | "ASSISTANT" | "teacher" | "student"
 }) {
   const {
     fullName,
@@ -21,7 +21,7 @@ export function ProfileForm({
     handleLogout,
   } = useProfileForm(initialName);
 
-  const backLink = userRole === "teacher" ? "/dashboard/teacher" : "/dashboard/student";
+  const backLink = (userRole === "TEACHER" || userRole === "teacher" || userRole === "ASSISTANT") ? "/dashboard/teacher" : "/dashboard/student";
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -47,25 +47,28 @@ export function ProfileForm({
             <input
               type="text"
               required
+              disabled={userRole === "ASSISTANT"}
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full border border-primary/10 rounded-[14px] px-4 py-3 font-body bg-surface text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+              className="w-full border border-primary/10 rounded-[14px] px-4 py-3 font-body bg-surface text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors disabled:opacity-60 disabled:bg-surface/50"
             />
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-ui text-muted flex items-center gap-2">
-              <Lock size={16} />
-              تغيير كلمة المرور (اختياري)
-            </label>
-            <input
-              type="password"
-              placeholder="اترك الحقل فارغاً إذا لم ترد تغيير كلمة المرور"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full border border-primary/10 rounded-[14px] px-4 py-3 font-body bg-surface text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors placeholder:text-muted/50"
-            />
-          </div>
+          {userRole !== "ASSISTANT" && (
+            <div className="space-y-2">
+              <label className="text-sm font-ui text-muted flex items-center gap-2">
+                <Lock size={16} />
+                تغيير كلمة المرور (اختياري)
+              </label>
+              <input
+                type="password"
+                placeholder="اترك الحقل فارغاً إذا لم ترد تغيير كلمة المرور"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full border border-primary/10 rounded-[14px] px-4 py-3 font-body bg-surface text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors placeholder:text-muted/50"
+              />
+            </div>
+          )}
 
           <div className="pt-6 mt-6 border-t border-primary/5 flex flex-col md:flex-row gap-4 justify-between items-center">
             <button
@@ -75,14 +78,16 @@ export function ProfileForm({
             >
               تسجيل الخروج
             </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full md:w-auto flex items-center justify-center gap-2 bg-primary text-inverse font-ui font-semibold px-8 py-3 rounded-lg hover:bg-primary-hover shadow-sm transition-colors disabled:opacity-60"
-            >
-              {loading && <Loader2 size={18} className="animate-spin" />}
-              حفظ التعديلات
-            </button>
+            {userRole !== "ASSISTANT" && (
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full md:w-auto flex items-center justify-center gap-2 bg-primary text-inverse font-ui font-semibold px-8 py-3 rounded-lg hover:bg-primary-hover shadow-sm transition-colors disabled:opacity-60"
+              >
+                {loading && <Loader2 size={18} className="animate-spin" />}
+                حفظ التعديلات
+              </button>
+            )}
           </div>
         </form>
       </div>

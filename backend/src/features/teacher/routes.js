@@ -47,4 +47,11 @@ router.post('/quizzes/:id/questions', verifyToken, requirePermission('QUIZ'), te
 router.put('/quizzes/:id/questions/:questionId', verifyToken, requirePermission('QUIZ'), teacherController.updateQuestion);
 router.delete('/quizzes/:id/questions/:questionId', verifyToken, requirePermission('QUIZ'), teacherController.deleteQuestion);
 
+// Assistant Management
+router.get('/assistants', verifyToken, requirePermission('SETTINGS'), teacherController.getAssistants);
+router.post('/assistants', verifyToken, requirePermission('SETTINGS'), teacherController.createAssistant);
+router.patch('/assistants/:id', verifyToken, requirePermission('SETTINGS'), teacherController.updateAssistant);
+router.patch('/assistants/:id/password', verifyToken, requirePermission('SETTINGS'), teacherController.resetAssistantPassword);
+router.delete('/assistants/:id', verifyToken, requirePermission('SETTINGS'), teacherController.deleteAssistant);
+
 module.exports = router;
