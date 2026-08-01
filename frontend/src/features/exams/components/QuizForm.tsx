@@ -2,6 +2,8 @@
 
 import { PlusCircle, Trash2, Loader2, Save, X, Plus, ImagePlus } from "lucide-react";
 import { useQuizForm, QuestionDraft } from "@/src/features/exams/hooks/useQuizForm";
+import { compressImage } from "@/src/lib/compressImage";
+import { toast } from "sonner";
 
 export function QuizForm({
   courseId,
@@ -112,14 +114,16 @@ export function QuizForm({
                         type="file" 
                         accept="image/*" 
                         className="hidden" 
-                        onChange={(e) => {
+                        onChange={async (e) => {
                           const file = e.target.files?.[0];
                           if (file) {
-                            const reader = new FileReader();
-                            reader.onloadend = () => {
-                              updateQuestion(qIndex, { imageUrl: reader.result as string });
-                            };
-                            reader.readAsDataURL(file);
+                            try {
+                              const compressedBase64 = await compressImage(file);
+                              updateQuestion(qIndex, { imageUrl: compressedBase64 });
+                            } catch (error) {
+                              console.error("Failed to compress image:", error);
+                              toast.error("فشل في معالجة الصورة");
+                            }
                           }
                         }}
                       />
@@ -179,14 +183,16 @@ export function QuizForm({
                             type="file" 
                             accept="image/*" 
                             className="hidden" 
-                            onChange={(e) => {
+                            onChange={async (e) => {
                               const file = e.target.files?.[0];
                               if (file) {
-                                const reader = new FileReader();
-                                reader.onloadend = () => {
-                                  updateOption(qIndex, oIndex, { imageUrl: reader.result as string });
-                                };
-                                reader.readAsDataURL(file);
+                                try {
+                                  const compressedBase64 = await compressImage(file);
+                                  updateOption(qIndex, oIndex, { imageUrl: compressedBase64 });
+                                } catch (error) {
+                                  console.error("Failed to compress image:", error);
+                                  toast.error("فشل في معالجة الصورة");
+                                }
                               }
                             }}
                           />

@@ -8,6 +8,7 @@ import { Button } from "@/src/shared/components/ui/Button";
 import { Card } from "@/src/shared/components/ui/Card";
 
 import { fetchApi } from "@/src/lib/api";
+import { compressImage } from "@/src/lib/compressImage";
 
 export function QuestionForm({ examId, initialData, onSave, onCancel }: { examId: string, initialData?: any, onSave: (q: any) => void, onCancel: () => void }) {
   const [loading, setLoading] = useState(false);
@@ -207,14 +208,16 @@ export function QuestionForm({ examId, initialData, onSave, onCancel }: { examId
                 type="file" 
                 accept="image/*" 
                 className="hidden" 
-                onChange={(e) => {
+                onChange={async (e) => {
                   const file = e.target.files?.[0];
                   if (file) {
-                    const reader = new FileReader();
-                    reader.onloadend = () => {
-                      setFormData(prev => ({ ...prev, imageUrl: reader.result as string }));
-                    };
-                    reader.readAsDataURL(file);
+                    try {
+                      const compressedBase64 = await compressImage(file);
+                      setFormData(prev => ({ ...prev, imageUrl: compressedBase64 }));
+                    } catch (error) {
+                      console.error("Failed to compress image:", error);
+                      toast.error("فشل في معالجة الصورة");
+                    }
                   }
                 }}
               />
@@ -267,14 +270,16 @@ export function QuestionForm({ examId, initialData, onSave, onCancel }: { examId
                         type="file" 
                         accept="image/*" 
                         className="hidden" 
-                        onChange={(e) => {
+                        onChange={async (e) => {
                           const file = e.target.files?.[0];
                           if (file) {
-                            const reader = new FileReader();
-                            reader.onloadend = () => {
-                              handleOptionImageChange(index, reader.result as string);
-                            };
-                            reader.readAsDataURL(file);
+                            try {
+                              const compressedBase64 = await compressImage(file);
+                              handleOptionImageChange(index, compressedBase64);
+                            } catch (error) {
+                              console.error("Failed to compress image:", error);
+                              toast.error("فشل في معالجة الصورة");
+                            }
                           }
                         }}
                       />
