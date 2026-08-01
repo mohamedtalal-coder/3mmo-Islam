@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const prisma = require('../../db');
 const { sendVerificationEmail } = require('../../services/mailer');
+const UAParser = require('ua-parser-js');
 
 const generateToken = (user) => {
   return jwt.sign(
@@ -123,6 +124,65 @@ exports.login = async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials.' });
     }
 
+    // --- Device Limit Check ---
+    const { deviceId } = req.body;
+    const userAgentString = req.headers['user-agent'] || '';
+    const parser = new UAParser(userAgentString);
+    const device = parser.getDevice();
+    
+    // Determine if it's Mobile/Tablet or Desktop
+    // ua-parser-js returns device.type as 'mobile', 'tablet', 'smarttv', 'console', 'wearable', 'embedded'
+    // If it's undefined, it's usually a Desktop browser.
+    const isMobileOrTablet = ['mobile', 'tablet'].includes(device.type);
+    const deviceType = isMobileOrTablet ? 'MOBILE' : 'DESKTOP';
+
+    let currentDeviceId = deviceId;
+    let allowedDevice = null;
+
+    if (currentDeviceId) {
+      allowedDevice = await prisma.userDevice.findUnique({
+        where: { deviceId: currentDeviceId }
+      });
+      if (allowedDevice && allowedDevice.userId !== user.id) {
+        // Device ID belongs to someone else! Force a new one for this user if possible
+        allowedDevice = null;
+        currentDeviceId = null;
+      }
+    }
+
+    if (allowedDevice) {
+      // Update last login for this device
+      await prisma.userDevice.update({
+        where: { id: allowedDevice.id },
+        data: { lastLogin: new Date(), userAgent: userAgentString }
+      });
+    } else {
+      // It's a new device or they cleared their localStorage
+      // Check how many devices of this type they already have
+      const existingDevicesCount = await prisma.userDevice.count({
+        where: { userId: user.id, deviceType }
+      });
+
+      if (existingDevicesCount >= 1) {
+        return res.status(403).json({ 
+          error: 'DEVICE_LIMIT_REACHED',
+          message: `عذراً، لقد استنفدت الحد الأقصى للأجهزة المسموح بها من نوع (${deviceType === 'DESKTOP' ? 'كمبيوتر' : 'هاتف/تابلت'}). يرجى التواصل مع الدعم أو المعلم لإعادة ضبط أجهزتك.`
+        });
+      }
+
+      // Slot is open, register this new device
+      currentDeviceId = crypto.randomUUID();
+      await prisma.userDevice.create({
+        data: {
+          userId: user.id,
+          deviceId: currentDeviceId,
+          deviceType,
+          userAgent: userAgentString
+        }
+      });
+    }
+    // --- End Device Limit Check ---
+
     // Update last login
     await prisma.user.update({
       where: { id: user.id },
@@ -138,8 +198,10 @@ exports.login = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     });
 
-    res.status(200).json({
-      message: 'Login successful',
+    return res.status(200).json({
+      success: true,
+      token, // Also send token in body for mobile apps if needed
+      deviceId: currentDeviceId,
       user: {
         id: user.id,
         email: user.email,

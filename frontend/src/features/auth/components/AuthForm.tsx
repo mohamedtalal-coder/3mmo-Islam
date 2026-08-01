@@ -94,15 +94,25 @@ export function AuthForm({ mode }: { mode: Mode }) {
     } else {
       setLoading(true);
       try {
-        await fetchApi("/auth/login", {
+        const storedDeviceId = localStorage.getItem('deviceId');
+        const data = await fetchApi("/auth/login", {
           method: "POST",
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ email, password, deviceId: storedDeviceId }),
         });
+        
+        if (data.deviceId) {
+          localStorage.setItem('deviceId', data.deviceId);
+        }
+        
         toast.success("تم تسجيل الدخول بنجاح!");
         router.push(redirectTo);
         router.refresh();
       } catch (err: any) {
-        toast.error(err.message || "البريد الإلكتروني أو كلمة المرور غير صحيحة.");
+        if (err.error === 'DEVICE_LIMIT_REACHED') {
+          toast.error(err.message, { duration: 8000 });
+        } else {
+          toast.error(err.message || "البريد الإلكتروني أو كلمة المرور غير صحيحة.");
+        }
         setLoading(false);
       }
     }

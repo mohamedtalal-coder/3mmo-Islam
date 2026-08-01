@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Ban, CheckCircle2, PauseCircle, PlayCircle } from "lucide-react";
+import { ArrowRight, Ban, CheckCircle2, PauseCircle, PlayCircle, Smartphone } from "lucide-react";
 import { toast } from "sonner";
 import { Card } from "@/src/shared/components/ui/Card";
 import { Badge } from "@/src/shared/components/ui/Badge";
@@ -121,6 +121,22 @@ export function StudentDetailClient({ initial }: { initial: Detail }) {
     }
   }
 
+  async function resetDevices() {
+    if (!confirm("هل أنت متأكد من إعادة ضبط الأجهزة لهذا الطالب؟ سيتمكن من تسجيل الدخول من جهاز جديد.")) return;
+    setLoadingKey("reset-devices");
+    const toastId = toast.loading("جاري إعادة ضبط الأجهزة...");
+    try {
+      await fetchApi(`/teacher/students/${detail.profile.id}/reset-devices`, {
+        method: "POST",
+      });
+      toast.success("تم إعادة ضبط الأجهزة بنجاح", { id: toastId });
+    } catch (err: any) {
+      toast.error(err.message || "فشل إعادة ضبط الأجهزة", { id: toastId });
+    } finally {
+      setLoadingKey(null);
+    }
+  }
+
   const { profile } = detail;
 
   return (
@@ -188,6 +204,14 @@ export function StudentDetailClient({ initial }: { initial: Detail }) {
                 تعطيل الحساب
               </Button>
             )}
+            <Button
+              variant="outline"
+              leftIcon={<Smartphone size={16} />}
+              isLoading={loadingKey === "reset-devices"}
+              onClick={resetDevices}
+            >
+              إعادة ضبط الأجهزة
+            </Button>
           </div>
         </div>
       </div>

@@ -1646,3 +1646,16 @@ exports.deleteAssistant = async (req, res) => {
   }
 };
 
+exports.resetStudentDevices = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await prisma.userDevice.deleteMany({
+      where: { userId: id }
+    });
+    res.status(200).json({ success: true, message: 'Devices reset successfully' });
+  } catch (error) {
+    console.error('Failed to reset devices:', error);
+    res.status(500).json({ error: 'Failed to reset devices' });
+  }
+};
+

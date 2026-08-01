@@ -54,4 +54,6 @@ router.patch('/assistants/:id', verifyToken, requirePermission('SETTINGS'), teac
 router.patch('/assistants/:id/password', verifyToken, requirePermission('SETTINGS'), teacherController.resetAssistantPassword);
 router.delete('/assistants/:id', verifyToken, requirePermission('SETTINGS'), teacherController.deleteAssistant);
 
+router.post('/students/:id/reset-devices', verifyToken, requirePermission('STUDENTS'), teacherController.resetStudentDevices);
+
 module.exports = router;
