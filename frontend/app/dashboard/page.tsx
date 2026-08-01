@@ -15,6 +15,6 @@ export default async function DashboardRedirect() {
     }
   }
 
-  const isAdmin = ["teacher", "course_admin", "exam_admin"].includes(role);
+  const isAdmin = ["teacher", "assistant"].includes(role);
   redirect(isAdmin ? "/dashboard/teacher" : "/dashboard/student");
 }
