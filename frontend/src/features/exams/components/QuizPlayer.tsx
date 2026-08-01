@@ -35,6 +35,7 @@ export function QuizPlayer({ quizId, onPassed }: { quizId: string; onPassed?: (c
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
+  const [zoomedImage, setZoomedImage] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -154,7 +155,15 @@ export function QuizPlayer({ quizId, onPassed }: { quizId: string; onPassed?: (c
                     </p>
                     {q.imageUrl && (
                       <div className="mt-4">
-                        <img src={q.imageUrl} alt="Question image" className="max-h-64 object-contain rounded-xl border border-primary/10" />
+                        <img 
+                          src={q.imageUrl} 
+                          alt="Question image" 
+                          className="max-h-64 object-contain rounded-xl border border-primary/10 cursor-zoom-in hover:opacity-90 transition-opacity" 
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setZoomedImage(q.imageUrl!);
+                          }}
+                        />
                       </div>
                     )}
                   </div>
@@ -182,7 +191,16 @@ export function QuizPlayer({ quizId, onPassed }: { quizId: string; onPassed?: (c
                       </div>
                       {o.imageUrl && (
                         <div className="mt-2 mr-8">
-                          <img src={o.imageUrl} alt="Option image" className="max-h-40 object-contain rounded-lg border border-primary/10" />
+                          <img 
+                            src={o.imageUrl} 
+                            alt="Option image" 
+                            className="max-h-40 object-contain rounded-lg border border-primary/10 cursor-zoom-in hover:opacity-90 transition-opacity"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setZoomedImage(o.imageUrl!);
+                            }} 
+                          />
                         </div>
                       )}
                     </label>
@@ -203,9 +221,32 @@ export function QuizPlayer({ quizId, onPassed }: { quizId: string; onPassed?: (c
             </Button>
             {!allAnswered && (
               <p className="text-center text-muted text-xs font-ui mt-4">
-                يرجى الإجابة على جميع الأسئلة قبل الإرسال
+                يجب الإجابة على جميع الأسئلة لتسليم الاختبار
               </p>
             )}
+          </div>
+        )}
+
+        {/* Image Zoom Modal */}
+        {zoomedImage && (
+          <div 
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+            onClick={() => setZoomedImage(null)}
+          >
+            <div className="relative max-w-5xl max-h-screen">
+              <button 
+                className="absolute -top-12 right-0 text-white hover:text-accent transition-colors"
+                onClick={() => setZoomedImage(null)}
+              >
+                <XCircle size={32} />
+              </button>
+              <img 
+                src={zoomedImage} 
+                alt="Zoomed" 
+                className="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl" 
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
           </div>
         )}
       </div>

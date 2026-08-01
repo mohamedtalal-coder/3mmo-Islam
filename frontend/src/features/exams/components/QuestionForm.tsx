@@ -12,11 +12,12 @@ import { compressImage } from "@/src/lib/compressImage";
 
 export function QuestionForm({ examId, initialData, onSave, onCancel }: { examId: string, initialData?: any, onSave: (q: any) => void, onCancel: () => void }) {
   const [loading, setLoading] = useState(false);
+  const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     questionText: initialData?.questionText || "",
     imageUrl: initialData?.imageUrl || undefined,
-    questionType: initialData?.questionType || "multiple_choice",
-    difficulty: initialData?.difficulty || "medium",
+    questionType: (initialData?.questionType || "multiple_choice").toLowerCase(),
+    difficulty: (initialData?.difficulty || "medium").toLowerCase(),
     marks: initialData?.marks || 1,
     explanation: initialData?.explanation || "",
     options: initialData?.options || [
@@ -30,25 +31,30 @@ export function QuestionForm({ examId, initialData, onSave, onCancel }: { examId
   };
 
   const handleOptionChange = (index: number, value: string) => {
-    const newOptions = [...formData.options];
-    newOptions[index].optionText = value;
+    const newOptions = formData.options.map((opt: any, i: number) => 
+      i === index ? { ...opt, optionText: value } : opt
+    );
     setFormData(prev => ({ ...prev, options: newOptions }));
   };
 
   const handleOptionImageChange = (index: number, imageUrl?: string) => {
-    const newOptions = [...formData.options];
-    newOptions[index].imageUrl = imageUrl;
+    const newOptions = formData.options.map((opt: any, i: number) => 
+      i === index ? { ...opt, imageUrl } : opt
+    );
     setFormData(prev => ({ ...prev, options: newOptions }));
   };
 
   const handleSetCorrect = (index: number) => {
-    const newOptions = [...formData.options];
-    if (formData.questionType === "multiple_choice" || formData.questionType === "true_false") {
-      // Only one correct answer
-      newOptions.forEach((opt, i) => opt.isCorrect = (i === index));
+    let newOptions = [...formData.options];
+    if (formData.questionType === "multiple_choice" || formData.questionType === "true_false" || formData.questionType === "MULTIPLE_CHOICE" || formData.questionType === "TRUE_FALSE") {
+      newOptions = newOptions.map((opt: any, i: number) => ({
+        ...opt,
+        isCorrect: (i === index)
+      }));
     } else {
-      // Multiple correct answers possible for multiple_select
-      newOptions[index].isCorrect = !newOptions[index].isCorrect;
+      newOptions = newOptions.map((opt: any, i: number) => 
+        i === index ? { ...opt, isCorrect: !opt.isCorrect } : opt
+      );
     }
     setFormData(prev => ({ ...prev, options: newOptions }));
   };
@@ -225,7 +231,12 @@ export function QuestionForm({ examId, initialData, onSave, onCancel }: { examId
           </div>
           {formData.imageUrl && (
             <div className="relative inline-block mt-2">
-              <img src={formData.imageUrl} alt="Question media" className="h-32 object-cover rounded-lg border border-primary/10" />
+              <img 
+                src={formData.imageUrl} 
+                alt="Question media" 
+                className="h-32 object-cover rounded-lg border border-primary/10 cursor-zoom-in hover:opacity-90 transition-opacity" 
+                onClick={() => setZoomedImage(formData.imageUrl!)}
+              />
               <button 
                 type="button" 
                 onClick={() => setFormData(prev => ({ ...prev, imageUrl: undefined }))}
@@ -293,7 +304,12 @@ export function QuestionForm({ examId, initialData, onSave, onCancel }: { examId
                 </div>
                 {opt.imageUrl && (
                   <div className="relative inline-block ml-8 mt-1 self-start">
-                    <img src={opt.imageUrl} alt="Option media" className="h-16 object-cover rounded-md border border-primary/10" />
+                    <img 
+                      src={opt.imageUrl} 
+                      alt="Option media" 
+                      className="h-16 object-cover rounded-md border border-primary/10 cursor-zoom-in hover:opacity-90 transition-opacity"
+                      onClick={() => setZoomedImage(opt.imageUrl!)}
+                    />
                     <button 
                       type="button" 
                       onClick={() => handleOptionImageChange(index, undefined)}
@@ -334,6 +350,30 @@ export function QuestionForm({ examId, initialData, onSave, onCancel }: { examId
           </Button>
         </div>
       </form>
+
+      {/* Image Zoom Modal */}
+      {zoomedImage && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+          onClick={() => setZoomedImage(null)}
+        >
+          <div className="relative max-w-5xl max-h-screen">
+            <button 
+              type="button"
+              className="absolute -top-12 right-0 text-white hover:text-accent transition-colors"
+              onClick={() => setZoomedImage(null)}
+            >
+              <X size={32} />
+            </button>
+            <img 
+              src={zoomedImage} 
+              alt="Zoomed" 
+              className="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl" 
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        </div>
+      )}
     </Card>
   );
 }
