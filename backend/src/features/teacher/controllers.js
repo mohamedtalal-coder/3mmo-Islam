@@ -1417,7 +1417,7 @@ exports.reorderGrades = async (req, res) => {
 exports.createQuestion = async (req, res) => {
   try {
     const { id } = req.params;
-    const { questionText, questionType, difficulty, marks, explanation, options } = req.body;
+    const { questionText, questionType, difficulty, marks, explanation, options, imageUrl } = req.body;
 
     const quiz = await prisma.quiz.findUnique({ where: { id } });
     if (!quiz) return res.status(404).json({ error: 'Quiz not found' });
@@ -1436,6 +1436,7 @@ exports.createQuestion = async (req, res) => {
       data: {
         quizId: id,
         questionText,
+        imageUrl: imageUrl || null,
         questionType: parsedType,
         difficulty: parsedDiff,
         marks: parseFloat(marks) || 1,
@@ -1444,6 +1445,7 @@ exports.createQuestion = async (req, res) => {
         options: {
           create: (options || []).map((o, i) => ({
             optionText: o.optionText,
+            imageUrl: o.imageUrl || null,
             isCorrect: Boolean(o.isCorrect),
             position: i
           }))
@@ -1462,7 +1464,7 @@ exports.createQuestion = async (req, res) => {
 exports.updateQuestion = async (req, res) => {
   try {
     const { id, questionId } = req.params;
-    const { questionText, questionType, difficulty, marks, explanation, options } = req.body;
+    const { questionText, questionType, difficulty, marks, explanation, options, imageUrl } = req.body;
 
     // We must delete old options and recreate them to be safe, or update them.
     // Deleting and recreating is easier for multiple choice options.
@@ -1477,6 +1479,7 @@ exports.updateQuestion = async (req, res) => {
       where: { id: questionId },
       data: {
         questionText,
+        imageUrl: imageUrl !== undefined ? (imageUrl || null) : undefined,
         questionType: parsedType,
         difficulty: parsedDiff,
         marks: parseFloat(marks) || 1,
@@ -1484,6 +1487,7 @@ exports.updateQuestion = async (req, res) => {
         options: {
           create: (options || []).map((o, i) => ({
             optionText: o.optionText,
+            imageUrl: o.imageUrl || null,
             isCorrect: Boolean(o.isCorrect),
             position: i
           }))
