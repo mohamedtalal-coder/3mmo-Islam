@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Home, BookOpen, Award, Bell, Trophy, Bookmark, User } from "lucide-react";
+import { Home, BookOpen, Award, Bell, Trophy, Bookmark, User, Wallet } from "lucide-react";
 import { DashboardShell } from "./DashboardShell";
 import { fetchApi } from "@/src/lib/api";
 
 const baseStudentLinks = [
   { label: "الرئيسية", href: "/dashboard/student", icon: Home },
+  { label: "محفظتي", href: "/dashboard/student/wallet", icon: Wallet },
   { label: "دوراتي", href: "/dashboard/student/courses", icon: BookOpen },
   { label: "الشهادات", href: "/dashboard/student/certificates", icon: Award },
   { label: "الإنجازات", href: "/dashboard/student/achievements", icon: Trophy },

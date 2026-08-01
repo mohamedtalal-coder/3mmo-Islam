@@ -24,21 +24,28 @@ export default function CheckoutButton({ courseId, price }: CheckoutButtonProps)
         body: JSON.stringify({ courseId }),
       });
 
-      if (data.redirectUrl) {
-        toast.success("تم التجهيز بنجاح! جاري تحويلك...", { id: toastId });
-        window.location.href = data.redirectUrl;
+      if (data.redirectUrl || data.success) {
+        toast.success("تم الدفع والاشتراك بنجاح! جاري تحويلك...", { id: toastId });
+        window.location.href = data.redirectUrl || `/dashboard/student/courses/${courseId}`;
       } else {
-        throw new Error("لم يتم إرجاع رابط الدفع الصحيح من الخادم");
+        throw new Error("حدث خطأ غير متوقع");
       }
     } catch (err: any) {
       console.error("Checkout error:", err);
-      toast.error(err.message || "عذراً، لم نتمكن من إتمام العملية. يرجى المحاولة مرة أخرى.", { id: toastId });
+      if (err.message?.includes("رصيد") || err.error === 'INSUFFICIENT_BALANCE') {
+        toast.error("رصيد المحفظة غير كافٍ. جاري تحويلك لصفحة المحفظة للشحن...", { id: toastId });
+        setTimeout(() => {
+          window.location.href = "/dashboard/student/wallet";
+        }, 1500);
+      } else {
+        toast.error(err.message || "عذراً، لم نتمكن من إتمام العملية. يرجى المحاولة مرة أخرى.", { id: toastId });
+      }
       setIsLoading(false);
     }
   };
 
   const isFree = Number(price) === 0;
-  const buttonText = isFree ? "اشتراك مجاني مباشر" : "تأكيد والدفع الآن";
+  const buttonText = isFree ? "اشتراك مجاني مباشر" : `خصم ${price} ج.م من المحفظة والاشتراك`;
 
   return (
     <button

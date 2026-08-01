@@ -18,4 +18,7 @@ router.get('/achievements', verifyToken, studentController.getStudentAchievement
 router.get('/bookmarks', verifyToken, studentController.getStudentBookmarks);
 router.post('/bookmarks/toggle', verifyToken, studentController.toggleBookmark);
 
+router.post('/wallet/charge', verifyToken, studentController.chargeWallet);
+router.get('/wallet/history', verifyToken, studentController.getWalletTransactions);
+
 module.exports = router;

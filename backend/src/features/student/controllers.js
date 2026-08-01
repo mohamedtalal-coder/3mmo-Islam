@@ -591,8 +591,12 @@ exports.enrollCourse = async (req, res) => {
 
     const student = await prisma.user.findUnique({
       where: { id: studentId },
-      select: { fullName: true },
+      select: { fullName: true, walletBalance: true },
     });
+
+    if (course.price > 0 && student.walletBalance < course.price) {
+      return res.status(400).json({ error: 'INSUFFICIENT_BALANCE', message: 'رصيد المحفظة غير كافٍ لشراء هذه الدورة.' });
+    }
 
     await prisma.$transaction(async (tx) => {
       await tx.enrollment.create({
@@ -605,6 +609,20 @@ exports.enrollCourse = async (req, res) => {
       });
 
       if (course.price > 0) {
+        await tx.user.update({
+          where: { id: studentId },
+          data: { walletBalance: { decrement: course.price } }
+        });
+
+        await tx.walletTransaction.create({
+          data: {
+            userId: studentId,
+            amount: -course.price,
+            type: 'PURCHASE',
+            description: `شراء دورة: ${course.title}`
+          }
+        });
+
         await tx.payment.create({
           data: {
             studentId,
@@ -825,5 +843,48 @@ exports.toggleBookmark = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to toggle bookmark' });
+  }
+};
+
+exports.chargeWallet = async (req, res) => {
+  try {
+    const studentId = req.user.id;
+    const { amount } = req.body;
+    if (!amount || amount <= 0) return res.status(400).json({ error: 'Invalid amount' });
+
+    await prisma.$transaction(async (tx) => {
+      await tx.user.update({
+        where: { id: studentId },
+        data: { walletBalance: { increment: amount } }
+      });
+      await tx.walletTransaction.create({
+        data: {
+          userId: studentId,
+          amount,
+          type: 'CHARGE',
+          description: 'شحن رصيد المحفظة'
+        }
+      });
+    });
+
+    const updatedUser = await prisma.user.findUnique({ where: { id: studentId }, select: { walletBalance: true } });
+    res.status(200).json({ success: true, balance: updatedUser.walletBalance });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to charge wallet' });
+  }
+};
+
+exports.getWalletTransactions = async (req, res) => {
+  try {
+    const studentId = req.user.id;
+    const transactions = await prisma.walletTransaction.findMany({
+      where: { userId: studentId },
+      orderBy: { createdAt: 'desc' }
+    });
+    const user = await prisma.user.findUnique({ where: { id: studentId }, select: { walletBalance: true } });
+    res.status(200).json({ balance: user.walletBalance, transactions });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch wallet history' });
   }
 };

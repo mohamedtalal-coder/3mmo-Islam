@@ -81,6 +81,7 @@ model User {
   accountStatus         AccountStatus @default(ACTIVE)
   totalStudyTimeSeconds Int           @default(0)
   averageScore          Float         @default(0)
+  walletBalance         Float         @default(0)
   currentGradeId        String?
   parentPhone           String?
   governorate           String?
@@ -107,6 +108,7 @@ model User {
   achievements    Achievement[]
   bookmarks       Bookmark[]
   reviews         Review[]
+  walletTransactions WalletTransaction[]
 
   notifyCourseUpdates Boolean @default(true)
   notifyQuizReminders Boolean @default(true)
@@ -334,6 +336,23 @@ model Transaction {
   id                    String   @id @default(uuid())
   providerTransactionId String   @unique
   createdAt             DateTime @default(now())
+}
+
+enum WalletTransactionType {
+  CHARGE
+  PURCHASE
+  REFUND
+}
+
+model WalletTransaction {
+  id          String                @id @default(uuid())
+  userId      String
+  amount      Float
+  type        WalletTransactionType
+  description String?
+  createdAt   DateTime              @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // ==========================================
