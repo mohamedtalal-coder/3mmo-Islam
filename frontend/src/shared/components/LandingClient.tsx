@@ -396,7 +396,7 @@ export function LandingClient({
           >
             {freeExams.map((exam: any) => (
               <motion.div key={exam.id} variants={fadeUpVariant} className="flex h-full">
-                <Link href={user ? `/dashboard/student/exams/${exam.id}` : "/register"} className="block w-full">
+                <Link href={user ? `/dashboard/student/quizzes/${exam.id}` : "/register"} className="block w-full">
                   <TiltCard className="h-full bg-primary border border-primary-light rounded-2xl p-6 transition-all shadow-sm hover:shadow-md hover:shadow-gold/10 flex flex-col group relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-bl-full -z-10 group-hover:scale-110 transition-transform" />
                     <div className="flex-1 z-10">
