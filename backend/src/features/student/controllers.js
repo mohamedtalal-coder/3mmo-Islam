@@ -255,7 +255,8 @@ exports.getStudentQuiz = async (req, res) => {
               orderBy: { position: 'asc' },
               select: {
                 id: true,
-                optionText: true
+                optionText: true,
+                imageUrl: true
               }
             }
           }
