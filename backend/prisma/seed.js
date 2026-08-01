@@ -126,7 +126,8 @@ async function main() {
           }
         ]
       }
-    }
+    },
+    include: { modules: true }
   });
 
   // Enroll some students in the paid course
@@ -246,7 +247,88 @@ async function main() {
     }
   });
 
-  // 10. Create Reviews for Courses
+  // 10. Create Exam attached to the Paid Course
+  console.log('Creating Course Exam...');
+  const courseExam = await prisma.quiz.create({
+    data: {
+      title: 'اختبار الوحدة الأولى: النحو',
+      description: 'اختبار شامل على ما تم دراسته في الوحدة الأولى.',
+      isStandalone: false,
+      courseId: paidCourse.id,
+      moduleId: paidCourse.modules[0].id,
+      status: 'PUBLISHED',
+      passingScore: 60,
+      totalMarks: 30,
+      questions: {
+        create: [
+          {
+            questionText: 'أي من الكلمات الآتية يعتبر مبتدأ؟',
+            marks: 10,
+            questionType: 'MULTIPLE_CHOICE',
+            options: {
+              create: [
+                { optionText: 'الشمسُ', isCorrect: true },
+                { optionText: 'تشرقُ', isCorrect: false },
+                { optionText: 'في', isCorrect: false }
+              ]
+            }
+          },
+          {
+            questionText: 'الخبر دائماً يكون:',
+            marks: 10,
+            questionType: 'MULTIPLE_CHOICE',
+            options: {
+              create: [
+                { optionText: 'منصوباً', isCorrect: false },
+                { optionText: 'مرفوعاً', isCorrect: true },
+                { optionText: 'مجروراً', isCorrect: false }
+              ]
+            }
+          },
+          {
+            questionText: 'كان وأخواتها تدخل على الجملة الاسمية فتنسخها.',
+            marks: 10,
+            questionType: 'TRUE_FALSE',
+            options: {
+              create: [
+                { optionText: 'صواب', isCorrect: true },
+                { optionText: 'خطأ', isCorrect: false }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    include: { questions: { include: { options: true } } }
+  });
+
+  // 11. Add Exam Attempts to Course Exam
+  console.log('Adding Course Exam Attempts...');
+  await prisma.quizAttempt.create({
+    data: {
+      quizId: courseExam.id,
+      studentId: students[0].id,
+      score: 100,
+      passed: true,
+      status: 'GRADED',
+      answers: JSON.parse(`{"${courseExam.questions[0].id}": "${courseExam.questions[0].options.find(o=>o.isCorrect).id}", "${courseExam.questions[1].id}": "${courseExam.questions[1].options.find(o=>o.isCorrect).id}", "${courseExam.questions[2].id}": "${courseExam.questions[2].options.find(o=>o.isCorrect).id}"}`),
+      submittedAt: new Date()
+    }
+  });
+
+  await prisma.quizAttempt.create({
+    data: {
+      quizId: courseExam.id,
+      studentId: students[1].id,
+      score: 66.6,
+      passed: true,
+      status: 'GRADED',
+      answers: JSON.parse(`{"${courseExam.questions[0].id}": "${courseExam.questions[0].options.find(o=>o.isCorrect).id}", "${courseExam.questions[1].id}": "${courseExam.questions[1].options.find(o=>o.isCorrect).id}", "${courseExam.questions[2].id}": "${courseExam.questions[2].options.find(o=>!o.isCorrect).id}"}`),
+      submittedAt: new Date()
+    }
+  });
+
+  // 12. Create Reviews for Courses
   console.log('Adding Reviews...');
   await prisma.review.createMany({
     data: [
