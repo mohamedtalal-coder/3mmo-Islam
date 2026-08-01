@@ -28,7 +28,10 @@ export function middleware(request: NextRequest) {
   if (token) {
     try {
       const payload = token.split('.')[1];
-      user = JSON.parse(atob(payload));
+      const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+      const padLength = (4 - (base64.length % 4)) % 4;
+      const padded = base64 + '='.repeat(padLength);
+      user = JSON.parse(atob(padded));
     } catch (e) {
       // invalid token
     }
@@ -47,7 +50,7 @@ export function middleware(request: NextRequest) {
   // Role-based guards for teacher dashboard
   if (user && pathname.startsWith("/dashboard/teacher")) {
     const role = user.role?.toUpperCase();
-    if (role !== "TEACHER" && role !== "COURSE_ADMIN" && role !== "EXAM_ADMIN") {
+    if (role !== "TEACHER" && role !== "ASSISTANT") {
       const studentUrl = request.nextUrl.clone();
       studentUrl.pathname = "/dashboard/student";
       return NextResponse.redirect(studentUrl);
