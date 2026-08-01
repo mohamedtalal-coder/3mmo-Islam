@@ -282,7 +282,8 @@ exports.createCourse = async (req, res) => {
       pricingType,
       gradeId,
       introVideoUrl,
-      externalLink
+      externalLink,
+      showOnLandingPage
     } = req.body;
 
     let thumbnailUrl = null;
@@ -305,6 +306,7 @@ exports.createCourse = async (req, res) => {
         gradeId,
         introVideoUrl: introVideoUrl || null,
         externalLink: externalLink || null,
+        showOnLandingPage: String(showOnLandingPage) === 'true',
         published: true // auto publish or wait? let's make it true for now
       }
     });
@@ -348,7 +350,8 @@ exports.updateCourse = async (req, res) => {
       published,
         title,
         description, price, pricingType, 
-      introVideoUrl, externalLink, attachmentsToDelete 
+      introVideoUrl, externalLink, attachmentsToDelete,
+      showOnLandingPage
     } = req.body;
 
     let thumbnailUrl = course.thumbnailUrl;
@@ -368,6 +371,7 @@ exports.updateCourse = async (req, res) => {
         ...(pricingType && { pricingType }),
         ...(introVideoUrl !== undefined && { introVideoUrl }),
         ...(externalLink !== undefined && { externalLink }),
+        ...(showOnLandingPage !== undefined && { showOnLandingPage: String(showOnLandingPage) === 'true' }),
         thumbnailUrl
       }
     });
@@ -652,26 +656,30 @@ exports.createQuiz = async (req, res) => {
   try {
     const { 
       courseId, moduleId, lessonId, title, passingScore, position, questions,
-      hasCertificate, certificateCondition, certificateConditionValue 
+      hasCertificate, certificateCondition, certificateConditionValue,
+      isStandalone 
     } = req.body;
 
-    // Verify course ownership
-    const course = await prisma.course.findFirst({
-      where: { id: courseId}
-    });
-
-    if (!course) {
-      return res.status(403).json({ error: 'Not authorized' });
+    // Verify course ownership if courseId is provided
+    if (courseId) {
+      const course = await prisma.course.findFirst({
+        where: { id: courseId}
+      });
+  
+      if (!course) {
+        return res.status(403).json({ error: 'Not authorized' });
+      }
     }
 
     const quiz = await prisma.quiz.create({
       data: {
-        courseId,
+        courseId: courseId || null,
+        isStandalone: Boolean(isStandalone),
         moduleId: moduleId || null,
         lessonId: lessonId || null,
         title,
         passingScore,
-        position,
+        position: position || 0,
         hasCertificate: Boolean(hasCertificate),
         certificateCondition: certificateCondition || null,
         certificateConditionValue: certificateConditionValue ? parseFloat(certificateConditionValue) : null,
@@ -725,6 +733,7 @@ exports.updateQuiz = async (req, res) => {
     if (body.showResultsImmediately !== undefined) dataToUpdate.showResultsImmediately = Boolean(body.showResultsImmediately);
     if (body.showCorrectAnswers !== undefined) dataToUpdate.showCorrectAnswers = Boolean(body.showCorrectAnswers);
     if (body.status !== undefined) dataToUpdate.status = typeof body.status === 'string' ? body.status.toUpperCase() : body.status;
+    if (body.isStandalone !== undefined) dataToUpdate.isStandalone = Boolean(body.isStandalone);
     
     // Certs
     if (body.hasCertificate !== undefined) dataToUpdate.hasCertificate = Boolean(body.hasCertificate);
@@ -781,6 +790,39 @@ exports.getQuizzes = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to fetch quizzes' });
+  }
+};
+
+exports.getQuizResults = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Ensure the quiz belongs to the teacher, OR it's standalone
+    const quiz = await prisma.quiz.findFirst({
+      where: {
+        id,
+        deletedAt: null
+      }
+    });
+
+    if (!quiz) {
+      return res.status(404).json({ error: 'Quiz not found' });
+    }
+
+    const attempts = await prisma.quizAttempt.findMany({
+      where: { quizId: id },
+      include: {
+        student: {
+          select: { id: true, fullName: true, phone: true }
+        }
+      },
+      orderBy: { submittedAt: 'desc' }
+    });
+
+    res.status(200).json({ attempts });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch quiz results' });
   }
 };
 

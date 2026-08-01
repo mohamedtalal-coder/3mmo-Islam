@@ -16,6 +16,7 @@ export function CourseForm({ grades = [] }: { grades?: any[] }) {
     introVideoUrl, setIntroVideoUrl,
     externalLink, setExternalLink,
     attachments, setAttachments,
+    showOnLandingPage, setShowOnLandingPage,
     loading, handleSubmit,
   } = useCourseForm();
 
@@ -198,6 +199,19 @@ export function CourseForm({ grades = [] }: { grades?: any[] }) {
               value={price}
               onChange={(e) => setPrice(e.target.value)}
             />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="showOnLandingPage"
+              checked={showOnLandingPage}
+              onChange={(e) => setShowOnLandingPage(e.target.checked)}
+              className="w-4 h-4 text-gold border-primary/20 rounded focus:ring-gold"
+            />
+            <label htmlFor="showOnLandingPage" className="text-sm font-ui text-primary">
+              عرض في الصفحة الرئيسية (كورس مجاني)
+            </label>
           </div>
 
           <Button

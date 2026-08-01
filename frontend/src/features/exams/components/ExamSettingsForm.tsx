@@ -20,6 +20,7 @@ export function ExamSettingsForm({ exam, onUpdate }: { exam: any, onUpdate: (dat
     shuffleAnswers: exam.shuffleAnswers || false,
     showResultsImmediately: exam.showResultsImmediately ?? true,
     showCorrectAnswers: exam.showCorrectAnswers ?? true,
+    isStandalone: exam.isStandalone || false,
     status: exam.status || "draft",
   });
 
@@ -187,6 +188,17 @@ export function ExamSettingsForm({ exam, onUpdate }: { exam: any, onUpdate: (dat
         <h3 className="font-display text-xl text-primary mb-6">إعدادات العرض</h3>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <label className="flex items-center gap-3 cursor-pointer p-4 border border-primary border-opacity-10 rounded-xl hover:bg-primary/5 transition-colors">
+            <input
+              type="checkbox"
+              name="isStandalone"
+              checked={formData.isStandalone}
+              onChange={handleChange}
+              className="w-5 h-5 accent-gold"
+            />
+            <span className="font-ui text-primary text-sm font-bold">اختبار مجاني مستقل (يُعرض في الرئيسية)</span>
+          </label>
+
           <label className="flex items-center gap-3 cursor-pointer p-4 border border-primary border-opacity-10 rounded-xl hover:bg-primary/5 transition-colors">
             <input
               type="checkbox"

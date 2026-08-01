@@ -11,6 +11,8 @@ export default async function Home() {
   let settings = null;
   let studentCount = 0;
   let courseCount = 0;
+  let freeCourses = [];
+  let freeExams = [];
 
   try {
     const authData = await fetchServerApi("/auth/me");
@@ -31,6 +33,8 @@ export default async function Home() {
       
       const allCourses = homeData.courses || [];
       const gradesData = homeData.grades || [];
+      freeCourses = homeData.freeCourses || [];
+      freeExams = homeData.freeExams || [];
 
       grades = gradesData.map((grade: any) => {
         const coursesForGrade = allCourses.filter((c: any) => c.gradeId === grade.id);
@@ -76,6 +80,8 @@ export default async function Home() {
       studentCount={studentCount} 
       courseCount={courseCount}
       user={user}
+      freeCourses={freeCourses}
+      freeExams={freeExams}
       reviews={reviews}
       faqs={faqs}
     />

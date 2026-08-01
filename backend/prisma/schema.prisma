@@ -208,6 +208,7 @@ model Course {
   pricingType            PricingType @default(ONE_TIME)
   subscriptionPeriodDays Int?
   published              Boolean     @default(false)
+  showOnLandingPage      Boolean     @default(false)
 
   gradeId           String?
   subjectId         String?
@@ -373,7 +374,8 @@ model WalletTransaction {
 
 model Quiz {
   id                     String     @id @default(uuid())
-  courseId               String
+  courseId               String?
+  isStandalone           Boolean    @default(false)
   moduleId               String?
   lessonId               String?
   title                  String
@@ -403,7 +405,7 @@ model Quiz {
   createdAt              DateTime   @default(now())
   updatedAt              DateTime   @updatedAt
 
-  course    Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course    Course?        @relation(fields: [courseId], references: [id], onDelete: Cascade)
   module    Module?        @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   lesson    Lesson?        @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   questions QuizQuestion[]

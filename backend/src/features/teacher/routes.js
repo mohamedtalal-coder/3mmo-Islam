@@ -19,6 +19,7 @@ router.patch('/lessons/:id', verifyToken, requirePermission('COURSE'), teacherCo
 router.delete('/lessons/:id', verifyToken, requirePermission('COURSE'), teacherController.deleteLesson);
 router.get('/quizzes', verifyToken, requirePermission('QUIZ'), teacherController.getQuizzes);
 router.post('/quizzes', verifyToken, requirePermission('QUIZ'), teacherController.createQuiz);
+router.get('/quizzes/:id/results', verifyToken, requirePermission('QUIZ'), teacherController.getQuizResults);
 router.get('/quizzes/:id', verifyToken, requirePermission('QUIZ'), teacherController.getQuizDetail);
 router.patch('/quizzes/:id', verifyToken, requirePermission('QUIZ'), teacherController.updateQuiz);
 router.delete('/quizzes/:id', verifyToken, requirePermission('QUIZ'), teacherController.deleteQuiz);

@@ -15,6 +15,7 @@ export function CreateExamForm({ courses }: { courses: any[] }) {
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("");
   const [courseId, setCourseId] = useState("");
+  const [isStandalone, setIsStandalone] = useState(false);
   const [testLevel, setTestLevel] = useState<TestLevel>("MODULE");
   const [moduleId, setModuleId] = useState("");
   const [lessonId, setLessonId] = useState("");
@@ -30,15 +31,19 @@ export function CreateExamForm({ courses }: { courses: any[] }) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!title || !courseId) {
-      toast.error("يرجى إدخال عنوان الاختبار واختيار الكورس");
+    if (!title) {
+      toast.error("يرجى إدخال عنوان الاختبار");
       return;
     }
-    if ((testLevel === "MODULE" || testLevel === "LESSON") && !moduleId) {
+    if (!isStandalone && !courseId) {
+      toast.error("يرجى اختيار الكورس أو تحديد أنه اختبار مستقل");
+      return;
+    }
+    if (!isStandalone && (testLevel === "MODULE" || testLevel === "LESSON") && !moduleId) {
       toast.error("يرجى اختيار الوحدة");
       return;
     }
-    if (testLevel === "LESSON" && !lessonId) {
+    if (!isStandalone && testLevel === "LESSON" && !lessonId) {
       toast.error("يرجى اختيار الدرس");
       return;
     }
@@ -49,9 +54,10 @@ export function CreateExamForm({ courses }: { courses: any[] }) {
     try {
       const payload = {
         title,
-        courseId,
-        moduleId: testLevel !== "COURSE" ? moduleId : null,
-        lessonId: testLevel === "LESSON" ? lessonId : null,
+        isStandalone,
+        courseId: isStandalone ? null : courseId,
+        moduleId: !isStandalone && testLevel !== "COURSE" ? moduleId : null,
+        lessonId: !isStandalone && testLevel === "LESSON" ? lessonId : null,
         hasCertificate,
         certificateCondition: hasCertificate ? certificateCondition : null,
         certificateConditionValue: hasCertificate && certificateCondition !== "ALL" ? certificateConditionValue : null,
@@ -74,10 +80,23 @@ export function CreateExamForm({ courses }: { courses: any[] }) {
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Association Settings */}
       <div className="space-y-4 p-4 border border-primary/10 rounded-xl bg-surface">
-        <h3 className="font-ui font-bold text-primary mb-2">ارتباط الاختبار</h3>
-        
-        <div>
-          <label className="block text-sm font-bold text-primary mb-2 font-ui">الكورس</label>
+        <div className="flex items-center gap-2 mb-4">
+          <input
+            type="checkbox"
+            id="isStandalone"
+            checked={isStandalone}
+            onChange={(e) => setIsStandalone(e.target.checked)}
+            className="w-4 h-4 text-gold border-primary/20 rounded focus:ring-gold"
+          />
+          <label htmlFor="isStandalone" className="text-sm font-ui text-primary font-bold">
+            اختبار مجاني مستقل (يُعرض في الصفحة الرئيسية)
+          </label>
+        </div>
+
+        {!isStandalone && (
+          <>
+            <div>
+              <label className="block text-sm font-bold text-primary mb-2 font-ui">الكورس</label>
           <select
             value={courseId}
             onChange={(e) => {
@@ -141,8 +160,10 @@ export function CreateExamForm({ courses }: { courses: any[] }) {
             </select>
           </div>
         )}
+          </>
+        )}
 
-        {testLevel === "LESSON" && (
+        {testLevel === "LESSON" && !isStandalone && (
           <div>
             <label className="block text-sm font-bold text-primary mb-2 font-ui">الدرس</label>
             <select

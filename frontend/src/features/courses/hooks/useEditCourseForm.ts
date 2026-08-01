@@ -19,6 +19,7 @@ export type CourseData = {
   thumbnail_url: string | null;
   intro_video_url?: string | null;
   external_link?: string | null;
+  showOnLandingPage?: boolean;
   attachments?: CourseAttachment[];
 };
 
@@ -38,6 +39,8 @@ export function useEditCourseForm(course: CourseData, onClose: () => void) {
   const [existingAttachments, setExistingAttachments] = useState<CourseAttachment[]>([]);
   const [newAttachments, setNewAttachments] = useState<File[]>([]);
   const [attachmentsToDelete, setAttachmentsToDelete] = useState<string[]>([]); // Array of attachment IDs
+
+  const [showOnLandingPage, setShowOnLandingPage] = useState(course.showOnLandingPage || false);
 
   const [loading, setLoading] = useState(false);
 
@@ -83,6 +86,7 @@ export function useEditCourseForm(course: CourseData, onClose: () => void) {
     if (description !== null) formData.append("description", description);
     formData.append("price", price);
     formData.append("pricingType", pricingType);
+    formData.append("showOnLandingPage", showOnLandingPage.toString());
     if (introVideoUrl) formData.append("introVideoUrl", introVideoUrl);
     if (externalLink) formData.append("externalLink", externalLink);
     
@@ -127,6 +131,7 @@ export function useEditCourseForm(course: CourseData, onClose: () => void) {
     existingAttachments, setExistingAttachments,
     newAttachments, setNewAttachments,
     attachmentsToDelete, setAttachmentsToDelete,
+    showOnLandingPage, setShowOnLandingPage,
     loading,
     handleSubmit,
   };

@@ -4,9 +4,10 @@ import { useState } from "react";
 import { Card } from "@/src/shared/components/ui/Card";
 import { ExamSettingsForm } from "./ExamSettingsForm";
 import { ExamQuestionBank } from "./ExamQuestionBank";
+import { ExamResultsClient } from "./ExamResultsClient";
 
 export function ExamBuilderClient({ initialExam, initialQuestions }: { initialExam: any, initialQuestions: any[] }) {
-  const [activeTab, setActiveTab] = useState<"settings" | "questions">("settings");
+  const [activeTab, setActiveTab] = useState<"settings" | "questions" | "results">("settings");
   const [exam, setExam] = useState(initialExam);
   const [questions, setQuestions] = useState(initialQuestions);
 
@@ -37,13 +38,27 @@ export function ExamBuilderClient({ initialExam, initialQuestions }: { initialEx
             {questions.length}
           </span>
         </button>
+        <button
+          onClick={() => setActiveTab("results")}
+          className={`px-6 py-3 font-bold transition-colors whitespace-nowrap flex items-center gap-2 ${
+            activeTab === "results"
+              ? "text-gold border-b-2 border-gold"
+              : "text-muted hover:text-primary"
+          }`}
+        >
+          النتائج والإحصائيات
+        </button>
       </div>
 
       <div className="mt-6">
-        {activeTab === "settings" ? (
+        {activeTab === "settings" && (
           <ExamSettingsForm exam={exam} onUpdate={setExam} />
-        ) : (
+        )}
+        {activeTab === "questions" && (
           <ExamQuestionBank examId={exam.id} questions={questions} onUpdate={setQuestions} />
+        )}
+        {activeTab === "results" && (
+          <ExamResultsClient examId={exam.id} />
         )}
       </div>
     </div>

@@ -17,6 +17,7 @@ export function EditCourseForm({ course, isOpen, onClose }: { course: CourseData
     existingAttachments,
     newAttachments, setNewAttachments,
     attachmentsToDelete, setAttachmentsToDelete,
+    showOnLandingPage, setShowOnLandingPage,
     loading,
     handleSubmit,
   } = useEditCourseForm(course, onClose);
@@ -220,6 +221,19 @@ export function EditCourseForm({ course, isOpen, onClose }: { course: CourseData
             onChange={(e) => setPrice(e.target.value)}
             className="w-full border border-primary/10 rounded-xl px-4 py-3 font-body bg-surface text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors placeholder:text-muted"
           />
+        </div>
+
+        <div className="flex items-center gap-2 mt-4">
+          <input
+            type="checkbox"
+            id="editShowOnLandingPage"
+            checked={showOnLandingPage}
+            onChange={(e) => setShowOnLandingPage(e.target.checked)}
+            className="w-4 h-4 text-gold border-primary/20 rounded focus:ring-gold"
+          />
+          <label htmlFor="editShowOnLandingPage" className="text-sm font-ui text-primary">
+            عرض في الصفحة الرئيسية (كورس مجاني)
+          </label>
         </div>
 
         {/* Actions */}

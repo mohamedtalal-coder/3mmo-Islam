@@ -110,6 +110,8 @@ export function LandingClient({
   studentCount = 0, 
   courseCount = 0,
   user,
+  freeCourses = [],
+  freeExams = [],
   reviews = [], faqs = []
 }: { 
   grades: any[], 
@@ -117,6 +119,8 @@ export function LandingClient({
   studentCount?: number,
   courseCount?: number,
   user?: any,
+  freeCourses?: any[],
+  freeExams?: any[],
   reviews?: any[], faqs?: any[]
 }) {
   const { scrollYProgress } = useScroll();
@@ -320,6 +324,96 @@ export function LandingClient({
           ))}
         </motion.div>
       </section>
+
+      {/* Free Courses Section */}
+      {freeCourses.length > 0 && (
+        <section className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 py-16 mb-24 bg-surface rounded-3xl border border-primary/5">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6 }}
+            className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-12"
+          >
+            <div>
+              <h2 className="h2 text-primary mb-2">دورات مجانية</h2>
+              <p className="text-secondary">اكتشف المحتوى المجاني وابدأ رحلة التعلم الآن.</p>
+            </div>
+          </motion.div>
+
+          <motion.div 
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            {freeCourses.map((course: any) => (
+              <motion.div key={course.id} variants={fadeUpVariant} className="flex h-full">
+                <Link href={user ? `/dashboard/student/courses/${course.id}` : "/register"} className="block w-full">
+                  <TiltCard className="h-full bg-background border border-primary/10 hover:border-gold/30 rounded-2xl p-6 transition-all shadow-sm hover:shadow-md flex flex-col group">
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start mb-4">
+                        <span className="small-label px-3 py-1 bg-gold/10 text-accent rounded-full">مجاني</span>
+                      </div>
+                      <h3 className="text-xl font-display text-primary mb-3 group-hover:text-accent transition-colors">
+                        {course.title}
+                      </h3>
+                      {course.description && (
+                        <p className="text-secondary text-sm line-clamp-2">{course.description}</p>
+                      )}
+                    </div>
+                  </TiltCard>
+                </Link>
+              </motion.div>
+            ))}
+          </motion.div>
+        </section>
+      )}
+
+      {/* Free Exams Section */}
+      {freeExams.length > 0 && (
+        <section className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 py-16 mb-24">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6 }}
+            className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-12"
+          >
+            <div>
+              <h2 className="h2 text-primary mb-2">اختبارات مجانية</h2>
+              <p className="text-secondary">اختبر معلوماتك وقيم مستواك مجاناً.</p>
+            </div>
+          </motion.div>
+
+          <motion.div 
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            {freeExams.map((exam: any) => (
+              <motion.div key={exam.id} variants={fadeUpVariant} className="flex h-full">
+                <Link href={user ? `/dashboard/student/exams/${exam.id}` : "/register"} className="block w-full">
+                  <TiltCard className="h-full bg-primary border border-primary-light rounded-2xl p-6 transition-all shadow-sm hover:shadow-md hover:shadow-gold/10 flex flex-col group relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-bl-full -z-10 group-hover:scale-110 transition-transform" />
+                    <div className="flex-1 z-10">
+                      <div className="flex justify-between items-start mb-4">
+                        <span className="small-label px-3 py-1 bg-gold text-primary rounded-full">اختبار مجاني</span>
+                      </div>
+                      <h3 className="text-xl font-display text-inverse mb-3 group-hover:text-gold transition-colors">
+                        {exam.title}
+                      </h3>
+                    </div>
+                  </TiltCard>
+                </Link>
+              </motion.div>
+            ))}
+          </motion.div>
+        </section>
+      )}
 
       {/* NEW: About the Teacher */}
       <section id="about" className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 py-16 mb-24">

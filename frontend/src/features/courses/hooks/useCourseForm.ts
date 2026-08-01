@@ -17,6 +17,7 @@ export function useCourseForm() {
   const [introVideoUrl, setIntroVideoUrl] = useState("");
   const [externalLink, setExternalLink] = useState("");
   const [attachments, setAttachments] = useState<File[]>([]);
+  const [showOnLandingPage, setShowOnLandingPage] = useState(false);
   
   const [loading, setLoading] = useState(false);
 
@@ -59,6 +60,7 @@ export function useCourseForm() {
     formData.append("price", price);
     formData.append("pricingType", pricingType);
     formData.append("gradeId", gradeId);
+    formData.append("showOnLandingPage", showOnLandingPage.toString());
     if (introVideoUrl) formData.append("introVideoUrl", introVideoUrl);
     if (externalLink) formData.append("externalLink", externalLink);
     if (thumbnail) formData.append("thumbnail", thumbnail);
@@ -101,6 +103,7 @@ export function useCourseForm() {
     introVideoUrl, setIntroVideoUrl,
     externalLink, setExternalLink,
     attachments, setAttachments,
+    showOnLandingPage, setShowOnLandingPage,
     loading,
     handleSubmit,
   };
