@@ -1,6 +1,4 @@
 "use client";
-
-import { QuizPlayer } from "@/src/features/exams/components/QuizPlayer";
 import { LessonComments } from "./LessonComments";
 import { BookmarkButton } from "./BookmarkButton";
 import { ReviewSubmitForm } from "./ReviewSubmitForm";
@@ -12,6 +10,7 @@ import {
 import Link from "next/link";
 import { useStudentCoursePlayer, Module, ContentTab } from "@/src/features/courses/hooks/useStudentCoursePlayer";
 import { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { generateCertificate } from "@/src/features/certificates/certificateGenerator";
 import { toast } from "sonner";
 
@@ -46,6 +45,7 @@ export default function StudentCoursePlayer({
   initialCertificate?: any;
   attachments?: any[];
 }) {
+  const router = useRouter();
   const {
     activeItem,
     setActiveItem,
@@ -248,7 +248,7 @@ export default function StudentCoursePlayer({
                         {quizzesEnabled && lesson.quizzes?.map((quiz) => (
                           <div key={quiz.id} className="pr-4 mt-1">
                             <button
-                              onClick={() => setActiveItem({ type: "quiz", quiz })}
+                              onClick={() => router.push(`/dashboard/student/quizzes/${quiz.id}?courseId=${courseId}`)}
                               className={`w-full text-right p-2 rounded-lg flex items-center justify-between text-xs transition-all duration-200 ${
                                 activeQuiz?.id === quiz.id
                                   ? "bg-gold/10 text-accent font-bold"
@@ -271,7 +271,7 @@ export default function StudentCoursePlayer({
                       module.quizzes?.map((quiz) => (
                         <li key={quiz.id}>
                           <button
-                            onClick={() => setActiveItem({ type: "quiz", quiz })}
+                            onClick={() => router.push(`/dashboard/student/quizzes/${quiz.id}?courseId=${courseId}`)}
                             className={`w-full text-right p-2.5 rounded-lg flex items-center justify-between text-sm transition-all duration-200 ${
                               activeQuiz?.id === quiz.id
                                 ? "bg-gold/10 text-accent font-bold"
@@ -340,19 +340,7 @@ export default function StudentCoursePlayer({
           </Link>
         </header>
 
-        {activeQuiz ? (
-          <QuizPlayer
-            quizId={activeQuiz.id}
-            onPassed={(certificate) => {
-              setPassedQuizzes((prev) => new Set(prev).add(activeQuiz.id));
-              if (certificatesEnabled && certificate) {
-                setTimeout(() => setCertificateReady(certificate), 1500);
-              } else if (certificatesEnabled) {
-                setTimeout(() => setCertificateReady(true), 1500);
-              }
-            }}
-          />
-        ) : activeLesson ? (
+        {activeLesson ? (
           <div className="flex-1 flex flex-col items-center p-4 md:p-8 lg:p-10">
             {/* Video Player */}
             <div 
@@ -570,7 +558,7 @@ export default function StudentCoursePlayer({
                           </div>
                         </div>
                         <button 
-                          onClick={() => setActiveItem({ type: "quiz", quiz })}
+                          onClick={() => router.push(`/dashboard/student/quizzes/${quiz.id}?courseId=${courseId}`)}
                           className={`flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl font-ui text-sm font-bold transition-all shrink-0 ${
                             passedQuizzes.has(quiz.id)
                               ? "bg-surface border border-surfaceBorder text-primary hover:bg-surface/80"
