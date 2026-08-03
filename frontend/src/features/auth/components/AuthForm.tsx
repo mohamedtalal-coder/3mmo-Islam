@@ -63,6 +63,18 @@ export function AuthForm({ mode }: { mode: Mode }) {
         toast.error("كلمة السر غير متطابقة.");
         return;
       }
+      if (phone.length < 10 || !/^\d+$/.test(phone)) {
+        toast.error("يرجى إدخال رقم هاتف صحيح للطالب.");
+        return;
+      }
+      if (parentPhone.length < 10 || !/^\d+$/.test(parentPhone)) {
+        toast.error("يرجى إدخال رقم هاتف صحيح لولي الأمر.");
+        return;
+      }
+      if (phone === parentPhone) {
+        toast.error("يجب أن يكون رقم ولي الأمر مختلفاً عن رقم الطالب.");
+        return;
+      }
       
       setLoading(true);
       try {
@@ -156,18 +168,21 @@ export function AuthForm({ mode }: { mode: Mode }) {
           />
           <Input
             type="tel"
+            required
             placeholder="رقم ولي الأمر"
             value={parentPhone}
             onChange={(e) => setParentPhone(e.target.value)}
           />
           <Input
             type="text"
+            required
             placeholder="المحافظة"
             value={governorate}
             onChange={(e) => setGovernorate(e.target.value)}
           />
           <Input
             type="text"
+            required
             placeholder="اسم المدرسة"
             value={schoolName}
             onChange={(e) => setSchoolName(e.target.value)}

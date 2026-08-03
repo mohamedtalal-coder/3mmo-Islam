@@ -17,8 +17,8 @@ exports.register = async (req, res) => {
   try {
     const { email, password, fullName, phone, parentPhone, governorate, schoolName, currentGradeId, role } = req.body;
 
-    if (!email || !password || !fullName) {
-      return res.status(400).json({ error: 'Email, password, and full name are required.' });
+    if (!email || !password || !fullName || !phone || !parentPhone || !governorate || !schoolName || !currentGradeId) {
+      return res.status(400).json({ error: 'جميع الحقول مطلوبة لإتمام عملية التسجيل.' });
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
