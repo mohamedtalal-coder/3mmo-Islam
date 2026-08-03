@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, Settings2, Globe, Type, Phone, Link as LinkIcon, Image as ImageIcon, Instagram, Youtube, Twitter, Send } from "lucide-react";
+import { Loader2, Settings2, Globe, Type, Phone, Link as LinkIcon, Image as ImageIcon, Camera, Video, Send } from "lucide-react";
 import { usePlatformSettingsForm, SettingsData } from "@/src/shared/hooks/usePlatformSettingsForm";
 import { Card } from "@/src/shared/components/ui/Card";
 import { Input } from "@/src/shared/components/ui/Input";
@@ -135,7 +135,7 @@ export function PlatformSettingsForm({ initialData }: { initialData: SettingsDat
                   <input type="checkbox" name="instagram_enabled" checked={formData.instagram_enabled} onChange={handleChange} className="w-4 h-4 accent-accent" />
                 </div>
               </div>
-              <Input type="url" name="instagram_url" value={formData.instagram_url} onChange={handleChange} placeholder="https://instagram.com/..." dir="ltr" leftIcon={<Instagram size={16} className="text-muted" />} />
+              <Input type="url" name="instagram_url" value={formData.instagram_url} onChange={handleChange} placeholder="https://instagram.com/..." dir="ltr" leftIcon={<Camera size={16} className="text-muted" />} />
             </div>
 
             {/* YouTube */}
@@ -147,7 +147,7 @@ export function PlatformSettingsForm({ initialData }: { initialData: SettingsDat
                   <input type="checkbox" name="youtube_enabled" checked={formData.youtube_enabled} onChange={handleChange} className="w-4 h-4 accent-accent" />
                 </div>
               </div>
-              <Input type="url" name="youtube_url" value={formData.youtube_url} onChange={handleChange} placeholder="https://youtube.com/..." dir="ltr" leftIcon={<Youtube size={16} className="text-muted" />} />
+              <Input type="url" name="youtube_url" value={formData.youtube_url} onChange={handleChange} placeholder="https://youtube.com/..." dir="ltr" leftIcon={<Video size={16} className="text-muted" />} />
             </div>
 
             {/* Twitter */}
@@ -159,7 +159,7 @@ export function PlatformSettingsForm({ initialData }: { initialData: SettingsDat
                   <input type="checkbox" name="twitter_enabled" checked={formData.twitter_enabled} onChange={handleChange} className="w-4 h-4 accent-accent" />
                 </div>
               </div>
-              <Input type="url" name="twitter_url" value={formData.twitter_url} onChange={handleChange} placeholder="https://twitter.com/..." dir="ltr" leftIcon={<Twitter size={16} className="text-muted" />} />
+              <Input type="url" name="twitter_url" value={formData.twitter_url} onChange={handleChange} placeholder="https://twitter.com/..." dir="ltr" leftIcon={<LinkIcon size={16} className="text-muted" />} />
             </div>
 
             {/* Telegram */}
