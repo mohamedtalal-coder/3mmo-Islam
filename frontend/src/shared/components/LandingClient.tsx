@@ -8,7 +8,7 @@ import { TiltCard } from "./TiltCard";
 import { InkDivider } from "./InkDivider";
 import { GeometricPattern } from "./GeometricPattern";
 import { HeroFlourish } from "./HeroFlourish";
-import { BookOpen, CheckCircle2, ChevronDown, LogOut, ArrowLeft, GraduationCap, PlayCircle, Star, Phone, Shield, Search } from "lucide-react";
+import { BookOpen, CheckCircle2, ChevronDown, LogOut, ArrowLeft, GraduationCap, PlayCircle, Star, Phone, Shield, Search, User, MessageCircle } from "lucide-react";
 import { ThemeToggle } from "@/src/shared/components/ThemeToggle";
 import { siteConfig } from "@/config/site.config";
 
