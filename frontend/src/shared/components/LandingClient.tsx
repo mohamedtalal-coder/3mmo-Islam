@@ -8,7 +8,8 @@ import { TiltCard } from "./TiltCard";
 import { InkDivider } from "./InkDivider";
 import { GeometricPattern } from "./GeometricPattern";
 import { HeroFlourish } from "./HeroFlourish";
-import { BookOpen, User, ChevronDown, Phone, MessageCircle, Star } from "lucide-react";
+import { BookOpen, CheckCircle2, ChevronDown, LogOut, ArrowLeft, GraduationCap, PlayCircle, Star, Phone, Shield, Search } from "lucide-react";
+import { ThemeToggle } from "@/src/shared/components/ThemeToggle";
 import { siteConfig } from "@/config/site.config";
 
 const fadeUpVariant = {
@@ -171,15 +172,19 @@ export function LandingClient({
         <div>
           {user ? (
             <div className="flex items-center gap-4">
+              <ThemeToggle />
               <span className="small-label hidden md:inline text-accent">مرحباً، {user.user_metadata?.full_name?.split(" ")[0] || "المستخدم"}</span>
               <Link href="/dashboard" className="btn btn-outline btn-sm">
                 لوحة التحكم
               </Link>
             </div>
           ) : (
-            <Link href="/login" className="btn btn-outline btn-sm">
-              دخول
-            </Link>
+            <div className="flex items-center gap-4">
+              <ThemeToggle />
+              <Link href="/login" className="btn btn-outline btn-sm">
+                دخول
+              </Link>
+            </div>
           )}
         </div>
       </motion.nav>

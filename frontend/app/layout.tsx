@@ -43,7 +43,6 @@ export default function RootLayout({
       <body>
         <ThemeProvider>
           {children}
-          <ThemeToggle />
           <ToastProvider />
           <FloatingWhatsApp />
         </ThemeProvider>

@@ -5,6 +5,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { LogoutButton } from "@/src/features/auth/components/LogoutButton";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
+import { ThemeToggle } from "@/src/shared/components/ThemeToggle";
 
 export function Topbar({ 
   onOpenSidebar, 
@@ -93,6 +94,8 @@ export function Topbar({
           >
             <Search size={20} />
           </button>
+
+          <ThemeToggle />
 
           {/* Notifications */}
           <Link 

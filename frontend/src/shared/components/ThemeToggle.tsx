@@ -20,7 +20,7 @@ export function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className={`fixed bottom-6 left-6 z-50 p-3 rounded-full shadow-lg backdrop-blur-md border transition-all duration-300 hover:scale-110 active:scale-95 ${
+      className={`p-2.5 rounded-full shadow-sm backdrop-blur-md border transition-all duration-300 hover:scale-110 active:scale-95 ${
         theme === "dark" 
           ? "bg-surface/80 border-primary shadow-primary/20 text-primary" 
           : "bg-surface/80 border-primary/10 shadow-primary/10 text-primary hover:bg-surface"
@@ -32,7 +32,7 @@ export function ThemeToggle() {
         animate={{ rotate: theme === "dark" ? 360 : 0 }}
         transition={{ duration: 0.5, type: "spring", stiffness: 200, damping: 20 }}
       >
-        {theme === "dark" ? <Sun size={24} /> : <Moon size={24} />}
+        {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
       </motion.div>
     </button>
   );
