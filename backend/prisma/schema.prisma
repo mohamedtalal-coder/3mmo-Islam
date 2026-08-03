@@ -6,8 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "mysql"
 }
 
 // ==========================================
@@ -76,7 +75,7 @@ model User {
   passwordHash          String // Replaces Supabase Auth
   fullName              String
   role                  UserRole      @default(STUDENT)
-  permissions           String[]      @default([])
+  permissions           Json          @default("[]")
   phone                 String?
   lastLoginAt           DateTime?
   accountStatus         AccountStatus @default(ACTIVE)
@@ -90,28 +89,28 @@ model User {
   createdAt             DateTime      @default(now())
   updatedAt             DateTime      @updatedAt
 
-  resetToken          String?
-  resetTokenExpires   DateTime?
+  resetToken        String?
+  resetTokenExpires DateTime?
 
   isVerified               Boolean   @default(false)
   verificationToken        String?
   verificationTokenExpires DateTime?
 
   // Relations
-  currentGrade    Grade?           @relation(fields: [currentGradeId], references: [id])
-  coursesTeaching Course[]         @relation("TeacherCourses")
-  enrollments     Enrollment[]
-  lessonProgress  LessonProgress[]
-  payments        Payment[]
-  quizAttempts    QuizAttempt[]
-  certificates    Certificate[]
-  lessonComments  LessonComment[]
-  notifications   Notification[]
-  achievements    Achievement[]
-  bookmarks       Bookmark[]
-  reviews         Review[]
+  currentGrade       Grade?              @relation(fields: [currentGradeId], references: [id])
+  coursesTeaching    Course[]            @relation("TeacherCourses")
+  enrollments        Enrollment[]
+  lessonProgress     LessonProgress[]
+  payments           Payment[]
+  quizAttempts       QuizAttempt[]
+  certificates       Certificate[]
+  lessonComments     LessonComment[]
+  notifications      Notification[]
+  achievements       Achievement[]
+  bookmarks          Bookmark[]
+  reviews            Review[]
   walletTransactions WalletTransaction[]
-  devices         UserDevice[]
+  devices            UserDevice[]
 
   notifyCourseUpdates Boolean @default(true)
   notifyQuizReminders Boolean @default(true)
@@ -131,32 +130,32 @@ model UserDevice {
 }
 
 model Settings {
-  id             String   @id @default(uuid())
-  teacherName    String?
-  teacherImage   String?
-  logo           String?
-  primaryColor   String?
-  secondaryColor String?
-  heroTitle      String?
-  heroSubtitle   String?
-  contactPhone   String?
-  contactPhoneEnabled Boolean @default(true)
-  facebook       String?
-  facebookEnabled Boolean @default(true)
-  whatsapp       String?
-  whatsappEnabled Boolean @default(true)
-  instagramUrl   String?
-  instagramEnabled Boolean @default(true)
-  youtubeUrl     String?
-  youtubeEnabled Boolean @default(true)
-  telegramUrl    String?
-  telegramEnabled Boolean @default(true)
-  twitterUrl     String?
-  twitterEnabled Boolean @default(true)
-  tiktokUrl      String?
-  tiktokEnabled  Boolean @default(true)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id                  String   @id @default(uuid())
+  teacherName         String?
+  teacherImage        String?
+  logo                String?
+  primaryColor        String?
+  secondaryColor      String?
+  heroTitle           String?
+  heroSubtitle        String?
+  contactPhone        String?
+  contactPhoneEnabled Boolean  @default(true)
+  facebook            String?
+  facebookEnabled     Boolean  @default(true)
+  whatsapp            String?
+  whatsappEnabled     Boolean  @default(true)
+  instagramUrl        String?
+  instagramEnabled    Boolean  @default(true)
+  youtubeUrl          String?
+  youtubeEnabled      Boolean  @default(true)
+  telegramUrl         String?
+  telegramEnabled     Boolean  @default(true)
+  twitterUrl          String?
+  twitterEnabled      Boolean  @default(true)
+  tiktokUrl           String?
+  tiktokEnabled       Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 }
 
 model Notification {
@@ -164,7 +163,7 @@ model Notification {
   userId    String
   type      String
   title     String
-  body      String
+  body      String    @db.Text
   link      String?
   readAt    DateTime?
   createdAt DateTime  @default(now())
@@ -180,7 +179,7 @@ model Grade {
   id          String   @id @default(uuid())
   name        String
   slug        String   @unique
-  description String?
+  description String?  @db.Text
   icon        String?
   colorTheme  String?
   order       Int      @default(0)
@@ -200,7 +199,7 @@ model Subject {
   slug        String
   icon        String?
   color       String?
-  description String?
+  description String?  @db.Text
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -218,7 +217,7 @@ model Course {
   id                     String      @id @default(uuid())
   teacherId              String
   title                  String
-  description            String?
+  description            String?     @db.Text
   price                  Float       @default(0)
   pricingType            PricingType @default(ONE_TIME)
   subscriptionPeriodDays Int?
@@ -229,7 +228,7 @@ model Course {
   subjectId         String?
   difficultyLevel   String?
   estimatedDuration Int? // minutes
-  tags              String[]
+  tags              Json    @default("[]")
 
   thumbnailUrl  String?
   introVideoUrl String?
@@ -288,10 +287,10 @@ model Lesson {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
-  module   Module           @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  progress LessonProgress[]
-  comments LessonComment[]
-  quizzes  Quiz[]
+  module    Module           @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  progress  LessonProgress[]
+  comments  LessonComment[]
+  quizzes   Quiz[]
   bookmarks Bookmark[]
 }
 
@@ -299,7 +298,7 @@ model LessonComment {
   id        String    @id @default(uuid())
   lessonId  String
   authorId  String
-  content   String
+  content   String    @db.Text
   deletedAt DateTime?
   createdAt DateTime  @default(now())
 
@@ -394,8 +393,8 @@ model Quiz {
   moduleId               String?
   lessonId               String?
   title                  String
-  description            String?
-  instructions           String?
+  description            String?    @db.Text
+  instructions           String?    @db.Text
   passingScore           Int        @default(60)
   durationMinutes        Int?
   startDate              DateTime?
@@ -410,34 +409,34 @@ model Quiz {
   status                 QuizStatus @default(DRAFT)
   totalMarks             Float      @default(0)
   position               Int        @default(0)
-  
+
   // Certificate Settings
-  hasCertificate            Boolean   @default(false)
-  certificateCondition      String?   // e.g., "SCORE", "TOP_N", "ALL"
-  certificateConditionValue Float?    // e.g., 80 for score %, 10 for Top 10
+  hasCertificate            Boolean @default(false)
+  certificateCondition      String? // e.g., "SCORE", "TOP_N", "ALL"
+  certificateConditionValue Float? // e.g., 80 for score %, 10 for Top 10
 
-  deletedAt              DateTime?
-  createdAt              DateTime   @default(now())
-  updatedAt              DateTime   @updatedAt
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
-  course    Course?        @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  module    Module?        @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  lesson    Lesson?        @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  questions QuizQuestion[]
-  attempts  QuizAttempt[]
+  course       Course?        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  module       Module?        @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  lesson       Lesson?        @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  questions    QuizQuestion[]
+  attempts     QuizAttempt[]
   certificates Certificate[]
 }
 
 model QuizQuestion {
   id           String             @id @default(uuid())
   quizId       String
-  questionText String
+  questionText String             @db.Text
   imageUrl     String?
   questionType QuestionType       @default(MULTIPLE_CHOICE)
   difficulty   QuestionDifficulty @default(MEDIUM)
   marks        Float              @default(1)
-  explanation  String?
-  tags         String[]
+  explanation  String?            @db.Text
+  tags         Json               @default("[]")
   category     String?
   position     Int                @default(0)
   createdAt    DateTime           @default(now())
@@ -451,7 +450,7 @@ model QuizOption {
   id         String   @id @default(uuid())
   questionId String
   optionText String
-  imageUrl     String?
+  imageUrl   String?
   isCorrect  Boolean  @default(false)
   position   Int      @default(0)
   createdAt  DateTime @default(now())
@@ -505,7 +504,7 @@ model Achievement {
   id          String   @id @default(uuid())
   studentId   String
   title       String
-  description String?
+  description String?  @db.Text
   icon        String   @default("??")
   points      Int      @default(0)
   earnedAt    DateTime @default(now())
@@ -536,7 +535,7 @@ model Review {
   studentId  String
   courseId   String
   rating     Int      @default(5)
-  comment    String?
+  comment    String?  @db.Text
   isApproved Boolean  @default(false)
   createdAt  DateTime @default(now())
 
@@ -552,8 +551,8 @@ model Review {
 
 model Faq {
   id        String   @id @default(uuid())
-  question  String
-  answer    String
+  question  String   @db.Text
+  answer    String   @db.Text
   isActive  Boolean  @default(true)
   position  Int      @default(0)
   createdAt DateTime @default(now())
