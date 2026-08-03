@@ -15,7 +15,7 @@ const generateToken = (user) => {
 
 exports.register = async (req, res) => {
   try {
-    const { email, password, fullName, phone, parentPhone, governorate, currentGradeId, role } = req.body;
+    const { email, password, fullName, phone, parentPhone, governorate, schoolName, currentGradeId, role } = req.body;
 
     if (!email || !password || !fullName) {
       return res.status(400).json({ error: 'Email, password, and full name are required.' });
@@ -53,6 +53,7 @@ exports.register = async (req, res) => {
         phone,
         parentPhone,
         governorate,
+        schoolName,
         currentGradeId,
         role: role === 'TEACHER' ? 'TEACHER' : 'STUDENT',
         isVerified: true, // TEMPORARY for testing
@@ -228,6 +229,7 @@ exports.me = async (req, res) => {
         phone: true,
         parentPhone: true,
         governorate: true,
+        schoolName: true,
         currentGradeId: true,
         accountStatus: true,
         createdAt: true,

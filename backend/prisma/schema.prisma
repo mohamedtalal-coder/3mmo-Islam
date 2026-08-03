@@ -85,6 +85,7 @@ model User {
   currentGradeId        String?
   parentPhone           String?
   governorate           String?
+  schoolName            String?
   createdAt             DateTime      @default(now())
   updatedAt             DateTime      @updatedAt
 
@@ -138,8 +139,21 @@ model Settings {
   heroTitle      String?
   heroSubtitle   String?
   contactPhone   String?
+  contactPhoneEnabled Boolean @default(true)
   facebook       String?
+  facebookEnabled Boolean @default(true)
   whatsapp       String?
+  whatsappEnabled Boolean @default(true)
+  instagramUrl   String?
+  instagramEnabled Boolean @default(true)
+  youtubeUrl     String?
+  youtubeEnabled Boolean @default(true)
+  telegramUrl    String?
+  telegramEnabled Boolean @default(true)
+  twitterUrl     String?
+  twitterEnabled Boolean @default(true)
+  tiktokUrl      String?
+  tiktokEnabled  Boolean @default(true)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }

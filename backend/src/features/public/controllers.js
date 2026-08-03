@@ -117,8 +117,21 @@ exports.getHomeData = async (req, res) => {
       hero_title: settings.heroTitle,
       hero_subtitle: settings.heroSubtitle,
       contact_phone: settings.contactPhone,
+      contact_phone_enabled: settings.contactPhoneEnabled,
       facebook: settings.facebook,
-      whatsapp: settings.whatsapp
+      facebook_enabled: settings.facebookEnabled,
+      whatsapp: settings.whatsapp,
+      whatsapp_enabled: settings.whatsappEnabled,
+      instagram_url: settings.instagramUrl,
+      instagram_enabled: settings.instagramEnabled,
+      youtube_url: settings.youtubeUrl,
+      youtube_enabled: settings.youtubeEnabled,
+      telegram_url: settings.telegramUrl,
+      telegram_enabled: settings.telegramEnabled,
+      twitter_url: settings.twitterUrl,
+      twitter_enabled: settings.twitterEnabled,
+      tiktok_url: settings.tiktokUrl,
+      tiktok_enabled: settings.tiktokEnabled
     } : null;
 
     res.status(200).json({

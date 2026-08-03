@@ -12,6 +12,7 @@ import { ToastProvider } from "@/src/shared/components/ui/ToastProvider";
 
 import { ThemeProvider } from "@/src/shared/components/ThemeProvider";
 import { ThemeToggle } from "@/src/shared/components/ThemeToggle";
+import { FloatingWhatsApp } from "@/src/shared/components/FloatingWhatsApp";
 
 export const metadata: Metadata = {
   title: `${siteConfig.teacher.name} | استلم شرحك`,
@@ -44,6 +45,7 @@ export default function RootLayout({
           {children}
           <ThemeToggle />
           <ToastProvider />
+          <FloatingWhatsApp />
         </ThemeProvider>
       </body>
     </html>

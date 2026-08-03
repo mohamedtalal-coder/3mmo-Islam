@@ -17,6 +17,7 @@ export default async function StudentProfilePage() {
       initialPhone={profile.phone || ""}
       initialParentPhone={profile.parentPhone || ""}
       initialGovernorate={profile.governorate || ""}
+      initialSchoolName={profile.schoolName || ""}
       initialCurrentGradeId={profile.currentGradeId || ""}
       initialNotifications={{
         courseUpdates: profile.notifyCourseUpdates ?? true,

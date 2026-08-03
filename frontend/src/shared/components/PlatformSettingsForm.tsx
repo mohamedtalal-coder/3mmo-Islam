@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, Settings2, Globe, Type, Phone, Link as LinkIcon, Image as ImageIcon } from "lucide-react";
+import { Loader2, Settings2, Globe, Type, Phone, Link as LinkIcon, Image as ImageIcon, Instagram, Youtube, Twitter, Send } from "lucide-react";
 import { usePlatformSettingsForm, SettingsData } from "@/src/shared/hooks/usePlatformSettingsForm";
 import { Card } from "@/src/shared/components/ui/Card";
 import { Input } from "@/src/shared/components/ui/Input";
@@ -85,46 +85,107 @@ export function PlatformSettingsForm({ initialData }: { initialData: SettingsDat
         </div>
 
         <div className="pt-6 border-t border-surfaceBorder">
-          <h3 className="font-display text-xl text-primary mb-4">وسائل التواصل (اختياري)</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="space-y-2">
-              <Input
-                label="رقم الهاتف"
-                type="text"
-                name="contact_phone"
-                value={formData.contact_phone}
-                onChange={handleChange}
-                placeholder="01xxxxxxxxx"
-                dir="ltr"
-                leftIcon={<Phone size={16} className="text-muted" />}
-              />
-            </div>
+          <h3 className="font-display text-xl text-primary mb-4">وسائل التواصل</h3>
+          <p className="text-sm text-muted mb-6">قم بإضافة روابط وسائل التواصل الخاصة بك وتفعيل أو تعطيل أي منها ليظهر على المنصة.</p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
-            <div className="space-y-2">
-              <Input
-                label="رابط فيسبوك"
-                type="url"
-                name="facebook"
-                value={formData.facebook}
-                onChange={handleChange}
-                placeholder="https://facebook.com/..."
-                dir="ltr"
-                leftIcon={<LinkIcon size={16} className="text-muted" />}
-              />
+            {/* Phone */}
+            <div className="space-y-2 p-4 bg-surface rounded-xl border border-surfaceBorder">
+              <div className="flex justify-between items-center mb-2">
+                <label className="text-sm font-semibold text-primary">رقم الهاتف</label>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted">{formData.contact_phone_enabled ? "مفعل" : "معطل"}</span>
+                  <input type="checkbox" name="contact_phone_enabled" checked={formData.contact_phone_enabled} onChange={handleChange} className="w-4 h-4 accent-accent" />
+                </div>
+              </div>
+              <Input type="text" name="contact_phone" value={formData.contact_phone} onChange={handleChange} placeholder="01xxxxxxxxx" dir="ltr" leftIcon={<Phone size={16} className="text-muted" />} />
             </div>
 
-            <div className="space-y-2">
-              <Input
-                label="رقم واتساب"
-                type="text"
-                name="whatsapp"
-                value={formData.whatsapp}
-                onChange={handleChange}
-                placeholder="+201xxxxxxxxx"
-                dir="ltr"
-                leftIcon={<Phone size={16} className="text-muted" />}
-              />
+            {/* WhatsApp */}
+            <div className="space-y-2 p-4 bg-surface rounded-xl border border-surfaceBorder">
+              <div className="flex justify-between items-center mb-2">
+                <label className="text-sm font-semibold text-primary">رقم واتساب</label>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted">{formData.whatsapp_enabled ? "مفعل" : "معطل"}</span>
+                  <input type="checkbox" name="whatsapp_enabled" checked={formData.whatsapp_enabled} onChange={handleChange} className="w-4 h-4 accent-accent" />
+                </div>
+              </div>
+              <Input type="text" name="whatsapp" value={formData.whatsapp} onChange={handleChange} placeholder="+201xxxxxxxxx" dir="ltr" leftIcon={<Phone size={16} className="text-muted" />} />
             </div>
+
+            {/* Facebook */}
+            <div className="space-y-2 p-4 bg-surface rounded-xl border border-surfaceBorder">
+              <div className="flex justify-between items-center mb-2">
+                <label className="text-sm font-semibold text-primary">فيسبوك</label>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted">{formData.facebook_enabled ? "مفعل" : "معطل"}</span>
+                  <input type="checkbox" name="facebook_enabled" checked={formData.facebook_enabled} onChange={handleChange} className="w-4 h-4 accent-accent" />
+                </div>
+              </div>
+              <Input type="url" name="facebook" value={formData.facebook} onChange={handleChange} placeholder="https://facebook.com/..." dir="ltr" leftIcon={<LinkIcon size={16} className="text-muted" />} />
+            </div>
+
+            {/* Instagram */}
+            <div className="space-y-2 p-4 bg-surface rounded-xl border border-surfaceBorder">
+              <div className="flex justify-between items-center mb-2">
+                <label className="text-sm font-semibold text-primary">انستجرام</label>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted">{formData.instagram_enabled ? "مفعل" : "معطل"}</span>
+                  <input type="checkbox" name="instagram_enabled" checked={formData.instagram_enabled} onChange={handleChange} className="w-4 h-4 accent-accent" />
+                </div>
+              </div>
+              <Input type="url" name="instagram_url" value={formData.instagram_url} onChange={handleChange} placeholder="https://instagram.com/..." dir="ltr" leftIcon={<Instagram size={16} className="text-muted" />} />
+            </div>
+
+            {/* YouTube */}
+            <div className="space-y-2 p-4 bg-surface rounded-xl border border-surfaceBorder">
+              <div className="flex justify-between items-center mb-2">
+                <label className="text-sm font-semibold text-primary">يوتيوب</label>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted">{formData.youtube_enabled ? "مفعل" : "معطل"}</span>
+                  <input type="checkbox" name="youtube_enabled" checked={formData.youtube_enabled} onChange={handleChange} className="w-4 h-4 accent-accent" />
+                </div>
+              </div>
+              <Input type="url" name="youtube_url" value={formData.youtube_url} onChange={handleChange} placeholder="https://youtube.com/..." dir="ltr" leftIcon={<Youtube size={16} className="text-muted" />} />
+            </div>
+
+            {/* Twitter */}
+            <div className="space-y-2 p-4 bg-surface rounded-xl border border-surfaceBorder">
+              <div className="flex justify-between items-center mb-2">
+                <label className="text-sm font-semibold text-primary">تويتر (X)</label>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted">{formData.twitter_enabled ? "مفعل" : "معطل"}</span>
+                  <input type="checkbox" name="twitter_enabled" checked={formData.twitter_enabled} onChange={handleChange} className="w-4 h-4 accent-accent" />
+                </div>
+              </div>
+              <Input type="url" name="twitter_url" value={formData.twitter_url} onChange={handleChange} placeholder="https://twitter.com/..." dir="ltr" leftIcon={<Twitter size={16} className="text-muted" />} />
+            </div>
+
+            {/* Telegram */}
+            <div className="space-y-2 p-4 bg-surface rounded-xl border border-surfaceBorder">
+              <div className="flex justify-between items-center mb-2">
+                <label className="text-sm font-semibold text-primary">تيليجرام</label>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted">{formData.telegram_enabled ? "مفعل" : "معطل"}</span>
+                  <input type="checkbox" name="telegram_enabled" checked={formData.telegram_enabled} onChange={handleChange} className="w-4 h-4 accent-accent" />
+                </div>
+              </div>
+              <Input type="url" name="telegram_url" value={formData.telegram_url} onChange={handleChange} placeholder="https://t.me/..." dir="ltr" leftIcon={<Send size={16} className="text-muted" />} />
+            </div>
+
+            {/* TikTok */}
+            <div className="space-y-2 p-4 bg-surface rounded-xl border border-surfaceBorder">
+              <div className="flex justify-between items-center mb-2">
+                <label className="text-sm font-semibold text-primary">تيك توك</label>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted">{formData.tiktok_enabled ? "مفعل" : "معطل"}</span>
+                  <input type="checkbox" name="tiktok_enabled" checked={formData.tiktok_enabled} onChange={handleChange} className="w-4 h-4 accent-accent" />
+                </div>
+              </div>
+              <Input type="url" name="tiktok_url" value={formData.tiktok_url} onChange={handleChange} placeholder="https://tiktok.com/@..." dir="ltr" leftIcon={<LinkIcon size={16} className="text-muted" />} />
+            </div>
+
           </div>
         </div>
 

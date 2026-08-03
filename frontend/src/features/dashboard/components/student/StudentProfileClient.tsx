@@ -16,6 +16,7 @@ interface ProfileProps {
   initialPhone?: string;
   initialParentPhone?: string;
   initialGovernorate?: string;
+  initialSchoolName?: string;
   initialCurrentGradeId?: string;
   initialNotifications?: any;
 }
@@ -27,6 +28,7 @@ export function StudentProfileClient({
   initialPhone = "", 
   initialParentPhone = "", 
   initialGovernorate = "", 
+  initialSchoolName = "",
   initialCurrentGradeId = "", 
   initialNotifications 
 }: ProfileProps) {
@@ -45,6 +47,7 @@ export function StudentProfileClient({
   const [phone, setPhone] = useState(initialPhone);
   const [parentPhone, setParentPhone] = useState(initialParentPhone);
   const [governorate, setGovernorate] = useState(initialGovernorate);
+  const [schoolName, setSchoolName] = useState(initialSchoolName);
   const [currentGradeId, setCurrentGradeId] = useState(initialCurrentGradeId);
   const [grades, setGrades] = useState<any[]>([]);
 
@@ -78,6 +81,7 @@ export function StudentProfileClient({
       phone: phone !== initialPhone ? phone : undefined,
       parentPhone: parentPhone !== initialParentPhone ? parentPhone : undefined,
       governorate: governorate !== initialGovernorate ? governorate : undefined,
+      schoolName: schoolName !== initialSchoolName ? schoolName : undefined,
       currentGradeId: currentGradeId !== initialCurrentGradeId ? currentGradeId : undefined,
     });
   };
@@ -166,6 +170,16 @@ export function StudentProfileClient({
                 onChange={(e) => setGovernorate(e.target.value)}
               />
 
+              <Input
+                label="اسم المدرسة"
+                leftIcon={<User size={14} />}
+                type="text"
+                value={schoolName}
+                onChange={(e) => setSchoolName(e.target.value)}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-bold text-primary mr-1">الصف</label>
                 <div className="relative">

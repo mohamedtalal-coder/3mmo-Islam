@@ -1181,8 +1181,21 @@ exports.getSettings = async (req, res) => {
       hero_title: settings.heroTitle,
       hero_subtitle: settings.heroSubtitle,
       contact_phone: settings.contactPhone,
+      contact_phone_enabled: settings.contactPhoneEnabled,
       facebook: settings.facebook,
-      whatsapp: settings.whatsapp
+      facebook_enabled: settings.facebookEnabled,
+      whatsapp: settings.whatsapp,
+      whatsapp_enabled: settings.whatsappEnabled,
+      instagram_url: settings.instagramUrl,
+      instagram_enabled: settings.instagramEnabled,
+      youtube_url: settings.youtubeUrl,
+      youtube_enabled: settings.youtubeEnabled,
+      telegram_url: settings.telegramUrl,
+      telegram_enabled: settings.telegramEnabled,
+      twitter_url: settings.twitterUrl,
+      twitter_enabled: settings.twitterEnabled,
+      tiktok_url: settings.tiktokUrl,
+      tiktok_enabled: settings.tiktokEnabled
     };
 
     res.status(200).json({ settings: formattedSettings });
@@ -1194,7 +1207,13 @@ exports.getSettings = async (req, res) => {
 
 exports.createSettings = async (req, res) => {
   try {
-    const { teacher_name, hero_title, hero_subtitle, contact_phone, facebook, whatsapp } = req.body;
+    const { 
+      teacher_name, hero_title, hero_subtitle, contact_phone, facebook, whatsapp,
+      contact_phone_enabled, facebook_enabled, whatsapp_enabled,
+      instagram_url, instagram_enabled, youtube_url, youtube_enabled,
+      telegram_url, telegram_enabled, twitter_url, twitter_enabled,
+      tiktok_url, tiktok_enabled
+    } = req.body;
 
     let teacherImageUrl = null;
     if (req.file) {
@@ -1209,8 +1228,21 @@ exports.createSettings = async (req, res) => {
         heroTitle: hero_title,
         heroSubtitle: hero_subtitle,
         contactPhone: contact_phone,
+        contactPhoneEnabled: contact_phone_enabled !== undefined ? String(contact_phone_enabled) === 'true' : undefined,
         facebook,
-        whatsapp
+        facebookEnabled: facebook_enabled !== undefined ? String(facebook_enabled) === 'true' : undefined,
+        whatsapp,
+        whatsappEnabled: whatsapp_enabled !== undefined ? String(whatsapp_enabled) === 'true' : undefined,
+        instagramUrl: instagram_url,
+        instagramEnabled: instagram_enabled !== undefined ? String(instagram_enabled) === 'true' : undefined,
+        youtubeUrl: youtube_url,
+        youtubeEnabled: youtube_enabled !== undefined ? String(youtube_enabled) === 'true' : undefined,
+        telegramUrl: telegram_url,
+        telegramEnabled: telegram_enabled !== undefined ? String(telegram_enabled) === 'true' : undefined,
+        twitterUrl: twitter_url,
+        twitterEnabled: twitter_enabled !== undefined ? String(twitter_enabled) === 'true' : undefined,
+        tiktokUrl: tiktok_url,
+        tiktokEnabled: tiktok_enabled !== undefined ? String(tiktok_enabled) === 'true' : undefined,
       }
     });
 
@@ -1224,7 +1256,13 @@ exports.createSettings = async (req, res) => {
 exports.updateSettings = async (req, res) => {
   try {
     const { id } = req.params;
-    const { teacher_name, hero_title, hero_subtitle, contact_phone, facebook, whatsapp } = req.body;
+    const { 
+      teacher_name, hero_title, hero_subtitle, contact_phone, facebook, whatsapp,
+      contact_phone_enabled, facebook_enabled, whatsapp_enabled,
+      instagram_url, instagram_enabled, youtube_url, youtube_enabled,
+      telegram_url, telegram_enabled, twitter_url, twitter_enabled,
+      tiktok_url, tiktok_enabled
+    } = req.body;
 
     const updateData = {
       teacherName: teacher_name,
@@ -1234,6 +1272,20 @@ exports.updateSettings = async (req, res) => {
       facebook,
       whatsapp
     };
+
+    if (contact_phone_enabled !== undefined) updateData.contactPhoneEnabled = String(contact_phone_enabled) === 'true';
+    if (facebook_enabled !== undefined) updateData.facebookEnabled = String(facebook_enabled) === 'true';
+    if (whatsapp_enabled !== undefined) updateData.whatsappEnabled = String(whatsapp_enabled) === 'true';
+    if (instagram_url !== undefined) updateData.instagramUrl = instagram_url;
+    if (instagram_enabled !== undefined) updateData.instagramEnabled = String(instagram_enabled) === 'true';
+    if (youtube_url !== undefined) updateData.youtubeUrl = youtube_url;
+    if (youtube_enabled !== undefined) updateData.youtubeEnabled = String(youtube_enabled) === 'true';
+    if (telegram_url !== undefined) updateData.telegramUrl = telegram_url;
+    if (telegram_enabled !== undefined) updateData.telegramEnabled = String(telegram_enabled) === 'true';
+    if (twitter_url !== undefined) updateData.twitterUrl = twitter_url;
+    if (twitter_enabled !== undefined) updateData.twitterEnabled = String(twitter_enabled) === 'true';
+    if (tiktok_url !== undefined) updateData.tiktokUrl = tiktok_url;
+    if (tiktok_enabled !== undefined) updateData.tiktokEnabled = String(tiktok_enabled) === 'true';
 
     if (req.file) {
       const base64 = req.file.buffer.toString('base64');

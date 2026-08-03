@@ -9,8 +9,21 @@ export type SettingsData = {
   hero_title: string;
   hero_subtitle: string;
   contact_phone: string;
+  contact_phone_enabled?: boolean;
   facebook: string;
+  facebook_enabled?: boolean;
   whatsapp: string;
+  whatsapp_enabled?: boolean;
+  instagram_url?: string;
+  instagram_enabled?: boolean;
+  youtube_url?: string;
+  youtube_enabled?: boolean;
+  telegram_url?: string;
+  telegram_enabled?: boolean;
+  twitter_url?: string;
+  twitter_enabled?: boolean;
+  tiktok_url?: string;
+  tiktok_enabled?: boolean;
 };
 
 export function usePlatformSettingsForm(initialData: SettingsData | null) {
@@ -24,14 +37,31 @@ export function usePlatformSettingsForm(initialData: SettingsData | null) {
     hero_title: initialData?.hero_title || "إبدأ رحلتك التعليمية اليوم!",
     hero_subtitle: initialData?.hero_subtitle || "منصة متكاملة لبيع الدورات التعليمية للمعلمين المصريين.",
     contact_phone: initialData?.contact_phone || "",
+    contact_phone_enabled: initialData?.contact_phone_enabled ?? true,
     facebook: initialData?.facebook || "",
+    facebook_enabled: initialData?.facebook_enabled ?? true,
     whatsapp: initialData?.whatsapp || "",
+    whatsapp_enabled: initialData?.whatsapp_enabled ?? true,
+    instagram_url: initialData?.instagram_url || "",
+    instagram_enabled: initialData?.instagram_enabled ?? true,
+    youtube_url: initialData?.youtube_url || "",
+    youtube_enabled: initialData?.youtube_enabled ?? true,
+    telegram_url: initialData?.telegram_url || "",
+    telegram_enabled: initialData?.telegram_enabled ?? true,
+    twitter_url: initialData?.twitter_url || "",
+    twitter_enabled: initialData?.twitter_enabled ?? true,
+    tiktok_url: initialData?.tiktok_url || "",
+    tiktok_enabled: initialData?.tiktok_enabled ?? true,
   });
 
   const [teacherImage, setTeacherImage] = useState<File | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({ 
+      ...prev, 
+      [name]: type === 'checkbox' ? checked : value 
+    }));
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {

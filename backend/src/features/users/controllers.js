@@ -4,13 +4,14 @@ const bcrypt = require('bcryptjs');
 exports.updateProfile = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { fullName, phone, parentPhone, governorate, currentGradeId, email, password, notifyCourseUpdates, notifyQuizReminders, notifyCertificates, notifyPayments } = req.body;
+    const { fullName, phone, parentPhone, governorate, schoolName, currentGradeId, email, password, notifyCourseUpdates, notifyQuizReminders, notifyCertificates, notifyPayments } = req.body;
 
     const updateData = {};
     if (fullName) updateData.fullName = fullName;
     if (phone !== undefined) updateData.phone = phone || null;
     if (parentPhone !== undefined) updateData.parentPhone = parentPhone || null;
     if (governorate !== undefined) updateData.governorate = governorate || null;
+    if (schoolName !== undefined) updateData.schoolName = schoolName || null;
     if (currentGradeId !== undefined) updateData.currentGradeId = currentGradeId || null;
     if (email) updateData.email = email;
     if (notifyCourseUpdates !== undefined) updateData.notifyCourseUpdates = notifyCourseUpdates;
@@ -33,6 +34,7 @@ exports.updateProfile = async (req, res) => {
         phone: true,
         parentPhone: true,
         governorate: true,
+        schoolName: true,
         role: true,
         currentGradeId: true
       }

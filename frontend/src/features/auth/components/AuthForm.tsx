@@ -25,6 +25,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
   const [phone, setPhone] = useState("");
   const [parentPhone, setParentPhone] = useState("");
   const [governorate, setGovernorate] = useState("");
+  const [schoolName, setSchoolName] = useState("");
   const [currentGradeId, setCurrentGradeId] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -74,6 +75,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
             phone,
             parentPhone,
             governorate,
+            schoolName,
             currentGradeId,
             role: role.toUpperCase() 
           }),
@@ -163,6 +165,12 @@ export function AuthForm({ mode }: { mode: Mode }) {
             placeholder="المحافظة"
             value={governorate}
             onChange={(e) => setGovernorate(e.target.value)}
+          />
+          <Input
+            type="text"
+            placeholder="اسم المدرسة"
+            value={schoolName}
+            onChange={(e) => setSchoolName(e.target.value)}
           />
           <div className="relative">
             <select
